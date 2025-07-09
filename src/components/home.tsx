@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link, useLocation } from "react-router-dom";
 import {
   Bell,
   Calendar,
@@ -19,6 +20,8 @@ import UserManagement from "./Users/UserManagement";
 import CreditSystem from "./Credits/CreditSystem";
 
 export default function HomePage() {
+  const location = useLocation();
+  
   // Mock user data
   const user = {
     name: "María González",
@@ -59,40 +62,40 @@ export default function HomePage() {
 
         <nav className="flex-1">
           <div className="space-y-1">
-            <Button variant="ghost" className="w-full justify-start" asChild>
-              <div className="flex items-center gap-3">
+            <Link to="/">
+              <Button variant={location.pathname === "/" ? "secondary" : "ghost"} className="w-full justify-start">
                 <Home className="h-5 w-5" />
                 <span>Inicio</span>
-              </div>
-            </Button>
+              </Button>
+            </Link>
 
-            <Button variant="ghost" className="w-full justify-start" asChild>
-              <div className="flex items-center gap-3">
+            <Link to="/dashboard">
+              <Button variant={location.pathname === "/dashboard" ? "secondary" : "ghost"} className="w-full justify-start">
                 <LayoutDashboard className="h-5 w-5" />
                 <span>Dashboard</span>
-              </div>
-            </Button>
+              </Button>
+            </Link>
 
-            <Button variant="ghost" className="w-full justify-start" asChild>
-              <div className="flex items-center gap-3">
+            <Link to="/calendar">
+              <Button variant={location.pathname === "/calendar" ? "secondary" : "ghost"} className="w-full justify-start">
                 <Calendar className="h-5 w-5" />
                 <span>Calendario</span>
-              </div>
-            </Button>
+              </Button>
+            </Link>
 
-            <Button variant="ghost" className="w-full justify-start" asChild>
-              <div className="flex items-center gap-3">
+            <Link to="/users">
+              <Button variant={location.pathname === "/users" ? "secondary" : "ghost"} className="w-full justify-start">
                 <Users className="h-5 w-5" />
                 <span>Usuarios</span>
-              </div>
-            </Button>
+              </Button>
+            </Link>
 
-            <Button variant="ghost" className="w-full justify-start" asChild>
-              <div className="flex items-center gap-3">
+            <Link to="/credits">
+              <Button variant={location.pathname === "/credits" ? "secondary" : "ghost"} className="w-full justify-start">
                 <CreditCard className="h-5 w-5" />
                 <span>Créditos</span>
-              </div>
-            </Button>
+              </Button>
+            </Link>
           </div>
         </nav>
 
