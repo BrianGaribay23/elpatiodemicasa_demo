@@ -6,6 +6,7 @@ import { UsersPage } from "@/modules/users";
 import { StudentsPage } from "@/modules/students";
 import { TeachersPage } from "@/modules/teachers";
 import { AcademicPage } from "@/modules/academic";
+import { CalendarPage } from "@/modules/calendar";
 import routes from "tempo-routes";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="students" element={<StudentsPage />} />
             <Route path="teachers" element={<TeachersPage />} />
             <Route path="academic" element={<AcademicPage />} />
+            <Route path="calendar" element={<CalendarPage />} />
           </Route>
         </Routes>
         {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
