@@ -42,12 +42,12 @@ export default function DashboardPage() {
   ];
 
   const countriesOfOrigin = [
-    { country: "Estados Unidos", flag: "🇺🇸", students: 45, percentage: 29 },
-    { country: "China", flag: "🇨🇳", students: 32, percentage: 21 },
-    { country: "Brasil", flag: "🇧🇷", students: 28, percentage: 18 },
-    { country: "Francia", flag: "🇫🇷", students: 20, percentage: 13 },
-    { country: "Alemania", flag: "🇩🇪", students: 18, percentage: 12 },
-    { country: "Japón", flag: "🇯🇵", students: 13, percentage: 8 },
+    { country: "Estados Unidos", flag: "🇺🇸", students: 68, percentage: 44 },
+    { country: "China", flag: "🇨🇳", students: 52, percentage: 33 },
+    { country: "Brasil", flag: "🇧🇷", students: 12, percentage: 8 },
+    { country: "Francia", flag: "🇫🇷", students: 10, percentage: 6 },
+    { country: "Alemania", flag: "🇩🇪", students: 8, percentage: 5 },
+    { country: "Otros", flag: "🌍", students: 6, percentage: 4 },
   ];
 
   const upcomingTrialClasses = [

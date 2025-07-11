@@ -89,11 +89,11 @@ const DashboardMetrics = ({
 }: DashboardMetricsProps) => {
   // Datos mockeados de países principales
   const topCountries = [
-    { flag: "🇺🇸", count: 45 },
-    { flag: "🇨🇳", count: 32 },
-    { flag: "🇧🇷", count: 28 },
-    { flag: "🇫🇷", count: 20 },
-    { flag: "🇩🇪", count: 18 },
+    { flag: "🇺🇸", count: 68 },
+    { flag: "🇨🇳", count: 52 },
+    { flag: "🇧🇷", count: 12 },
+    { flag: "🇫🇷", count: 10 },
+    { flag: "🇩🇪", count: 8 },
   ];
 
   return (
