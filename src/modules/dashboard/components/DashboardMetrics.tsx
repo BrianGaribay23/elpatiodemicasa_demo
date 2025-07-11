@@ -1,12 +1,13 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   ArrowUpIcon,
   ArrowDownIcon,
   Users,
   Calendar,
-  UserCheck,
-  CreditCard,
+  Activity,
+  UserPlus,
 } from "lucide-react";
 
 interface MetricCardProps {
@@ -16,6 +17,8 @@ interface MetricCardProps {
   change: number;
   trend: "up" | "down" | "neutral";
   description?: string;
+  subtitle?: string;
+  extra?: React.ReactNode;
 }
 
 const MetricCard = ({
@@ -25,6 +28,8 @@ const MetricCard = ({
   change,
   trend,
   description = "desde el mes pasado",
+  subtitle,
+  extra,
 }: MetricCardProps) => {
   return (
     <Card className="bg-white border-2 border-gray-200">
@@ -36,6 +41,8 @@ const MetricCard = ({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
+        {subtitle && <p className="text-xs text-gray-600 mt-1">{subtitle}</p>}
+        {extra && <div className="mt-2">{extra}</div>}
         <div className="flex items-center pt-1 text-xs">
           {trend === "up" && (
             <ArrowUpIcon className="w-3 h-3 mr-1 text-green-600" />
@@ -46,7 +53,7 @@ const MetricCard = ({
           <span
             className={`${trend === "up" ? "text-green-600" : trend === "down" ? "text-red-600" : "text-gray-500"}`}
           >
-            {change}%
+            {change > 0 ? "+" : ""}{change}%
           </span>
           <span className="ml-1 text-gray-500">{description}</span>
         </div>
@@ -56,57 +63,118 @@ const MetricCard = ({
 };
 
 interface DashboardMetricsProps {
+  activeStudents?: number;
   classesToday?: number;
-  activeTeachers?: number;
-  enrolledStudents?: number;
-  pendingCredits?: number;
-  classTrend?: number;
-  teacherTrend?: number;
+  individualClasses?: number;
+  groupClasses?: number;
+  attendanceRate?: number;
+  newStudents?: number;
   studentTrend?: number;
-  creditTrend?: number;
+  classTrend?: number;
+  attendanceTrend?: number;
+  newStudentsTrend?: number;
 }
 
 const DashboardMetrics = ({
+  activeStudents = 156,
   classesToday = 24,
-  activeTeachers = 12,
-  enrolledStudents = 156,
-  pendingCredits = 432,
-  classTrend = 8,
-  teacherTrend = 5,
-  studentTrend = 12,
-  creditTrend = -3,
+  individualClasses = 16,
+  groupClasses = 8,
+  attendanceRate = 94,
+  newStudents = 12,
+  studentTrend = 8,
+  classTrend = 12,
+  attendanceTrend = 3,
+  newStudentsTrend = 15,
 }: DashboardMetricsProps) => {
+  // Datos mockeados de países principales
+  const topCountries = [
+    { flag: "🇺🇸", count: 45 },
+    { flag: "🇨🇳", count: 32 },
+    { flag: "🇧🇷", count: 28 },
+    { flag: "🇫🇷", count: 20 },
+    { flag: "🇩🇪", count: 18 },
+  ];
+
   return (
-    <div className="w-full bg-background p-4">
-      <h2 className="text-xl font-bold mb-4">Métricas del día</h2>
+    <div className="w-full bg-background">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          title="Estudiantes Activos"
+          value={activeStudents}
+          subtitle="De 15 países diferentes"
+          icon={<Users className="h-5 w-5 text-blue-600" />}
+          change={studentTrend}
+          trend={studentTrend >= 0 ? "up" : "down"}
+          extra={
+            <div className="flex -space-x-2">
+              {topCountries.map((country, index) => (
+                <div
+                  key={index}
+                  className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs border-2 border-white"
+                  title={`${country.count} estudiantes`}
+                >
+                  {country.flag}
+                </div>
+              ))}
+              <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs border-2 border-white font-medium">
+                +10
+              </div>
+            </div>
+          }
+        />
+        
         <MetricCard
           title="Clases Hoy"
           value={classesToday}
-          icon={<Calendar className="h-5 w-5 text-blue-600" />}
+          subtitle={`${individualClasses} individuales • ${groupClasses} grupales`}
+          icon={<Calendar className="h-5 w-5 text-green-600" />}
           change={classTrend}
           trend={classTrend >= 0 ? "up" : "down"}
+          extra={
+            <div className="flex gap-2">
+              <Badge variant="outline" className="text-xs">
+                <span className="w-2 h-2 rounded-full bg-blue-500 mr-1"></span>
+                Individual
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                <span className="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
+                Grupal
+              </Badge>
+            </div>
+          }
         />
+        
         <MetricCard
-          title="Profesores Activos"
-          value={activeTeachers}
-          icon={<UserCheck className="h-5 w-5 text-green-600" />}
-          change={teacherTrend}
-          trend={teacherTrend >= 0 ? "up" : "down"}
+          title="Tasa de Asistencia"
+          value={`${attendanceRate}%`}
+          subtitle="Promedio semanal"
+          icon={<Activity className="h-5 w-5 text-purple-600" />}
+          change={attendanceTrend}
+          trend={attendanceTrend >= 0 ? "up" : "down"}
+          description="vs semana anterior"
+          extra={
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-purple-600 h-2 rounded-full"
+                style={{ width: `${attendanceRate}%` }}
+              />
+            </div>
+          }
         />
+        
         <MetricCard
-          title="Estudiantes Inscritos"
-          value={enrolledStudents}
-          icon={<Users className="h-5 w-5 text-orange-500" />}
-          change={studentTrend}
-          trend={studentTrend >= 0 ? "up" : "down"}
-        />
-        <MetricCard
-          title="Créditos Pendientes"
-          value={pendingCredits}
-          icon={<CreditCard className="h-5 w-5 text-purple-600" />}
-          change={creditTrend}
-          trend={creditTrend >= 0 ? "up" : "down"}
+          title="Nuevos Estudiantes"
+          value={newStudents}
+          subtitle="Este mes"
+          icon={<UserPlus className="h-5 w-5 text-orange-600" />}
+          change={newStudentsTrend}
+          trend={newStudentsTrend >= 0 ? "up" : "down"}
+          extra={
+            <Badge variant="secondary" className="text-xs">
+              🎯 Meta: 15
+            </Badge>
+          }
         />
       </div>
     </div>
