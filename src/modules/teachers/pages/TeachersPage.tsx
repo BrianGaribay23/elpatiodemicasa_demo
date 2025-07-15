@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Plus, Mail, Phone, Calendar, Clock, Star } from "lucide-react";
+import { Search, Plus, Mail, Phone, Calendar, Clock, Star, Users, UserCheck } from "lucide-react";
+import NewTeacherDialog from "../components/NewTeacherDialog";
 
 export default function TeachersPage() {
+  const [isNewTeacherDialogOpen, setIsNewTeacherDialogOpen] = useState(false);
   // Mock teacher data
   const teachers = [
     {
@@ -75,7 +77,7 @@ export default function TeachersPage() {
             className="flex-1"
           />
         </div>
-        <Button>
+        <Button onClick={() => setIsNewTeacherDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Profesor
         </Button>
@@ -204,9 +206,17 @@ export default function TeachersPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* New Teacher Dialog */}
+      <NewTeacherDialog
+        open={isNewTeacherDialogOpen}
+        onOpenChange={setIsNewTeacherDialogOpen}
+        onSubmit={(data) => {
+          console.log("Nuevo profesor:", data);
+          // Aquí se implementaría la lógica para guardar el profesor
+          // Por ahora solo mostramos en consola
+        }}
+      />
     </div>
   );
 }
-
-// Import missing icons
-import { Users, UserCheck } from "lucide-react";

@@ -23,14 +23,18 @@ import {
   UserCheck,
   AlertCircle,
   ChevronLeft,
-  MapPin
+  MapPin,
+  CalendarDays
 } from "lucide-react";
 import { format } from "date-fns";
+import ClassScheduler from "../components/ClassScheduler";
 
 export default function StudentsPage() {
   const [activeTab, setActiveTab] = useState("students");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
+  const [schedulerGroup, setSchedulerGroup] = useState<any>(null);
 
   // Mock student data
   const students = [
@@ -477,6 +481,22 @@ export default function StudentsPage() {
                           </div>
                           <ChevronRight className="h-4 w-4 text-[var(--secondary-blue)]" />
                         </div>
+
+                        <div className="pt-3 border-t border-[var(--border-color)] flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSchedulerGroup(group);
+                              setIsSchedulerOpen(true);
+                            }}
+                          >
+                            <CalendarDays className="h-4 w-4 mr-1" />
+                            Programar Mes
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
                   ))}
@@ -856,6 +876,21 @@ export default function StudentsPage() {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* Class Scheduler Dialog */}
+      {schedulerGroup && (
+        <ClassScheduler
+          open={isSchedulerOpen}
+          onOpenChange={setIsSchedulerOpen}
+          group={schedulerGroup}
+          onSchedule={(classes) => {
+            console.log("Clases programadas:", classes);
+            // Aquí se implementaría la lógica para guardar las clases
+            // Por ahora solo mostramos en consola
+            alert(`Se han programado ${classes.length} clases para el grupo ${schedulerGroup.name}`);
+          }}
+        />
       )}
     </div>
   );
