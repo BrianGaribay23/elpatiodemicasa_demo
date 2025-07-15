@@ -49,6 +49,8 @@ export default function MainLayout() {
         return "Gestión Académica";
       case "/calendar":
         return "Calendario";
+      case "/finance":
+        return "Finanzas";
       default:
         return "Dashboard";
     }
@@ -97,6 +99,12 @@ export default function MainLayout() {
             className={location.pathname === "/calendar" ? "text-[var(--primary-green)] font-semibold border-b-2 border-[var(--primary-green)] pb-1" : "hover:text-[var(--primary-green)] transition-colors"}
           >
             Calendario
+          </Link>
+          <Link 
+            to="/finance" 
+            className={location.pathname === "/finance" ? "text-[var(--primary-green)] font-semibold border-b-2 border-[var(--primary-green)] pb-1" : "hover:text-[var(--primary-green)] transition-colors"}
+          >
+            Finanzas
           </Link>
         </nav>
         

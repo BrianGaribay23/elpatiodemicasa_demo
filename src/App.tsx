@@ -7,6 +7,7 @@ import { StudentsPage } from "@/modules/students";
 import { TeachersPage } from "@/modules/teachers";
 import { AcademicPage } from "@/modules/academic";
 import { CalendarPage } from "@/modules/calendar";
+import { FinancePage } from "@/modules/finance";
 import { LoginPage, AuthProvider, ProtectedRoute } from "@/modules/auth";
 import routes from "tempo-routes";
 
@@ -43,6 +44,11 @@ function App() {
               <Route path="teachers" element={<TeachersPage />} />
               <Route path="academic" element={<AcademicPage />} />
               <Route path="calendar" element={<CalendarPage />} />
+              <Route path="finance" element={
+                <ProtectedRoute allowedRoles={["ADMINISTRADOR_GENERAL", "COORDINADOR_ACADEMICO"]}>
+                  <FinancePage />
+                </ProtectedRoute>
+              } />
             </Route>
 
             {/* Unauthorized Route */}
