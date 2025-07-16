@@ -5,19 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
-  DollarSign,
-  CreditCard,
-  TrendingUp,
-  Users,
-  Calendar,
   Download,
   Search,
-  Plus,
   Receipt,
-  Package,
   AlertCircle,
-  CheckCircle,
-  Clock,
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
@@ -26,11 +17,13 @@ import { es } from "date-fns/locale";
 import CreditPackages from "../components/CreditPackages";
 import InvoiceGenerator from "../components/InvoiceGenerator";
 import StudentCredits from "../components/StudentCredits";
+import InvoiceViewer from "../components/InvoiceViewer";
 
 export default function FinancePage() {
   const [activeTab, setActiveTab] = useState("overview");
-  const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [showInvoiceGenerator, setShowInvoiceGenerator] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [showInvoiceViewer, setShowInvoiceViewer] = useState(false);
 
   // Mock data
   const stats = {
@@ -88,103 +81,86 @@ export default function FinancePage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="mb-8 px-4 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">Finanzas</h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Gestiona créditos, pagos y facturación
-          </p>
+          <h2 className="text-[var(--secondary-blue)] text-3xl font-bold leading-tight">Finanzas</h2>
+          <p className="text-[var(--neutral-gray)] mt-1">Gestiona créditos, pagos y facturación del sistema.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Exportar Reporte
-          </Button>
-          <Button 
-            className="bg-[var(--primary-green)] hover:opacity-90 text-white"
-            onClick={() => setShowInvoiceGenerator(true)}
-          >
-            <Receipt className="h-4 w-4 mr-2" />
-            Nueva Venta
-          </Button>
+        <div className="text-[var(--primary-green)] opacity-20">
+          <svg className="w-16 h-16" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" strokeLinecap="round" strokeLinejoin="round"></path>
+          </svg>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Resumen</TabsTrigger>
-          <TabsTrigger value="packages">Paquetes</TabsTrigger>
-          <TabsTrigger value="students">Créditos por Estudiante</TabsTrigger>
-          <TabsTrigger value="transactions">Transacciones</TabsTrigger>
-        </TabsList>
+      {/* Action Buttons */}
+      <div className="px-4 flex justify-end gap-2">
+        <Button variant="outline" className="border-[var(--border-color)]">
+          <Download className="h-4 w-4 mr-2" />
+          Exportar Reporte
+        </Button>
+        <Button 
+          className="bg-[var(--primary-green)] hover:opacity-90 text-white"
+          onClick={() => setShowInvoiceGenerator(true)}
+        >
+          <Receipt className="h-4 w-4 mr-2" />
+          Nueva Venta
+        </Button>
+      </div>
+
+      <div className="px-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="bg-gray-100 p-1 rounded-lg">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-[var(--primary-green)]">Resumen</TabsTrigger>
+            <TabsTrigger value="packages" className="data-[state=active]:bg-white data-[state=active]:text-[var(--primary-green)]">Paquetes</TabsTrigger>
+            <TabsTrigger value="students" className="data-[state=active]:bg-white data-[state=active]:text-[var(--primary-green)]">Créditos por Estudiante</TabsTrigger>
+            <TabsTrigger value="transactions" className="data-[state=active]:bg-white data-[state=active]:text-[var(--primary-green)]">Transacciones</TabsTrigger>
+          </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6 mt-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Ingresos del Mes</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">${stats.monthlyRevenue.toLocaleString()}</div>
-                <div className="flex items-center text-xs text-[var(--primary-green)]">
-                  <ArrowUpRight className="h-3 w-3 mr-1" />
-                  {stats.monthlyRevenueChange}% vs mes anterior
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Paquetes Activos</CardTitle>
-                <Package className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.activePackages}</div>
-                <div className="flex items-center text-xs text-[var(--primary-green)]">
-                  <ArrowUpRight className="h-3 w-3 mr-1" />
-                  {stats.activePackagesChange}% más que el mes pasado
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pagos Pendientes</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.pendingPayments}</div>
-                <p className="text-xs text-muted-foreground">
-                  Por ${stats.pendingAmount.toLocaleString()}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Créditos en Circulación</CardTitle>
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.creditsInCirculation}</div>
-                <p className="text-xs text-muted-foreground">
-                  {stats.creditsUsedThisMonth} usados este mes
-                </p>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--primary-green)]">
+              <p className="text-[var(--neutral-gray)] text-base font-medium">Ingresos del Mes</p>
+              <p className="text-[var(--text-primary)] text-4xl font-bold">${stats.monthlyRevenue.toLocaleString()}</p>
+              <div className="flex items-center text-sm text-[var(--primary-green)]">
+                <ArrowUpRight className="h-3 w-3 mr-1" />
+                {stats.monthlyRevenueChange}% vs mes anterior
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--secondary-blue)]">
+              <p className="text-[var(--neutral-gray)] text-base font-medium">Paquetes Activos</p>
+              <p className="text-[var(--text-primary)] text-4xl font-bold">{stats.activePackages}</p>
+              <div className="flex items-center text-sm text-[var(--primary-green)]">
+                <ArrowUpRight className="h-3 w-3 mr-1" />
+                {stats.activePackagesChange}% más que el mes pasado
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--accent-orange)]">
+              <p className="text-[var(--neutral-gray)] text-base font-medium">Pagos Pendientes</p>
+              <p className="text-[var(--text-primary)] text-4xl font-bold">{stats.pendingPayments}</p>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Por ${stats.pendingAmount.toLocaleString()}
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--neutral-gray)]">
+              <p className="text-[var(--neutral-gray)] text-base font-medium">Créditos en Circulación</p>
+              <p className="text-[var(--text-primary)] text-4xl font-bold">{stats.creditsInCirculation}</p>
+              <p className="text-sm text-[var(--text-secondary)]">
+                {stats.creditsUsedThisMonth} usados este mes
+              </p>
+            </div>
           </div>
 
           {/* Recent Transactions and Alerts */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Recent Transactions */}
-            <Card className="lg:col-span-2">
+            <Card className="lg:col-span-2 shadow-md border-[var(--border-color)]">
               <CardHeader>
-                <CardTitle>Transacciones Recientes</CardTitle>
+                <CardTitle className="text-xl font-semibold text-[var(--text-primary)]">Transacciones Recientes</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -214,7 +190,14 @@ export default function FinancePage() {
                             {transaction.status === 'completed' ? 'Pagado' : 'Pendiente'}
                           </Badge>
                           {transaction.invoice && (
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                setSelectedInvoice(transaction);
+                                setShowInvoiceViewer(true);
+                              }}
+                            >
                               <Receipt className="h-3 w-3" />
                             </Button>
                           )}
@@ -227,9 +210,9 @@ export default function FinancePage() {
             </Card>
 
             {/* Low Balance Alert */}
-            <Card>
+            <Card className="shadow-md border-[var(--border-color)]">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-xl font-semibold text-[var(--text-primary)]">
                   <AlertCircle className="h-5 w-5 text-[var(--accent-orange)]" />
                   Saldo Bajo
                 </CardTitle>
@@ -267,65 +250,75 @@ export default function FinancePage() {
           <StudentCredits />
         </TabsContent>
 
-        {/* Transactions Tab */}
-        <TabsContent value="transactions" className="mt-6">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle>Historial de Transacciones</CardTitle>
+          {/* Transactions Tab */}
+          <TabsContent value="transactions" className="mt-6">
+            <Card className="shadow-md border-[var(--border-color)]">
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-xl font-semibold text-[var(--text-primary)]">Historial de Transacciones</CardTitle>
                 <div className="flex gap-2">
-                  <Input 
-                    placeholder="Buscar por estudiante..." 
-                    className="w-64"
-                    icon={<Search className="h-4 w-4" />}
-                  />
-                  <Button variant="outline">Filtrar</Button>
+                  <div className="relative w-64">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)]" />
+                    <Input 
+                      placeholder="Buscar por estudiante..." 
+                      className="pl-10 border-[var(--border-color)]"
+                    />
+                  </div>
+                  <Button variant="outline" className="border-[var(--border-color)]">Filtrar</Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="border-b">
-                    <tr className="text-left text-sm font-medium text-muted-foreground">
-                      <th className="pb-3">Fecha</th>
-                      <th className="pb-3">Estudiante</th>
-                      <th className="pb-3">Tipo</th>
-                      <th className="pb-3">Paquete</th>
-                      <th className="pb-3">Créditos</th>
-                      <th className="pb-3">Monto</th>
-                      <th className="pb-3">Estado</th>
-                      <th className="pb-3">Factura</th>
+                  <thead className="bg-gray-50 border-b border-[var(--border-color)]">
+                    <tr className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">
+                      <th className="px-6 py-4 text-left">Fecha</th>
+                      <th className="px-6 py-4 text-left">Estudiante</th>
+                      <th className="px-6 py-4 text-left">Tipo</th>
+                      <th className="px-6 py-4 text-left">Paquete</th>
+                      <th className="px-6 py-4 text-left">Créditos</th>
+                      <th className="px-6 py-4 text-left">Monto</th>
+                      <th className="px-6 py-4 text-left">Estado</th>
+                      <th className="px-6 py-4 text-left">Factura</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y">
+                  <tbody className="divide-y divide-[var(--border-color)]">
                     {recentTransactions.concat(recentTransactions).map((transaction, idx) => (
-                      <tr key={`${transaction.id}-${idx}`} className="text-sm">
-                        <td className="py-3">
+                      <tr key={`${transaction.id}-${idx}`} className="text-sm hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
                           {format(transaction.date, "d MMM yyyy", { locale: es })}
                         </td>
-                        <td className="py-3">{transaction.student}</td>
-                        <td className="py-3">
+                        <td className="px-6 py-4 font-medium text-[var(--text-primary)]">{transaction.student}</td>
+                        <td className="px-6 py-4">
                           <Badge variant="outline">
                             {transaction.type === 'purchase' ? 'Compra' : 'Renovación'}
                           </Badge>
                         </td>
-                        <td className="py-3">{transaction.package}</td>
-                        <td className="py-3">{transaction.credits}</td>
-                        <td className="py-3 font-medium">${transaction.amount.toLocaleString()}</td>
-                        <td className="py-3">
+                        <td className="px-6 py-4">{transaction.package}</td>
+                        <td className="px-6 py-4">{transaction.credits}</td>
+                        <td className="px-6 py-4 font-medium">${transaction.amount.toLocaleString()}</td>
+                        <td className="px-6 py-4">
                           <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'}>
                             {transaction.status === 'completed' ? 'Pagado' : 'Pendiente'}
                           </Badge>
                         </td>
-                        <td className="py-3">
+                        <td className="px-6 py-4">
                           {transaction.invoice ? (
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-[var(--secondary-blue)]"
+                              onClick={() => {
+                                setSelectedInvoice(transaction);
+                                setShowInvoiceViewer(true);
+                              }}
+                            >
                               <Receipt className="h-4 w-4 mr-1" />
                               {transaction.invoice}
                             </Button>
                           ) : (
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" className="border-[var(--border-color)]">
                               Generar
                             </Button>
                           )}
@@ -336,9 +329,10 @@ export default function FinancePage() {
                 </table>
               </div>
             </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
 
       {/* Invoice Generator Dialog */}
       {showInvoiceGenerator && (
@@ -350,6 +344,15 @@ export default function FinancePage() {
             // Aquí se implementaría la lógica para guardar la factura
             setShowInvoiceGenerator(false);
           }}
+        />
+      )}
+
+      {/* Invoice Viewer Dialog */}
+      {showInvoiceViewer && selectedInvoice && (
+        <InvoiceViewer
+          open={showInvoiceViewer}
+          onOpenChange={setShowInvoiceViewer}
+          invoice={selectedInvoice}
         />
       )}
     </div>

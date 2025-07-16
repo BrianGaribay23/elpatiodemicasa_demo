@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { X, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 // US Time Zones
 const US_TIMEZONES = [
@@ -42,21 +42,6 @@ const US_TIMEZONES = [
   { value: "Pacific/Honolulu", label: "Hawaii Time", abbr: "HST" },
 ];
 
-// Specialties list
-const SPECIALTIES = [
-  "Yoga",
-  "Pilates",
-  "CrossFit",
-  "Funcional",
-  "Zumba",
-  "Baile",
-  "Natación",
-  "Boxeo",
-  "Spinning",
-  "Meditación",
-  "Stretching",
-  "TRX",
-];
 
 // Form schema
 const teacherFormSchema = z.object({
@@ -64,8 +49,6 @@ const teacherFormSchema = z.object({
   email: z.string().email("Email inválido"),
   phone: z.string().min(10, "Teléfono inválido"),
   timezone: z.string().min(1, "Selecciona una zona horaria"),
-  specialties: z.array(z.string()).min(1, "Selecciona al menos una especialidad"),
-  experience: z.string().min(1, "Ingresa los años de experiencia"),
   schedule: z.string().min(1, "Ingresa el horario disponible"),
   bio: z.string().optional(),
 });
@@ -83,7 +66,6 @@ export default function NewTeacherDialog({
   onOpenChange,
   onSubmit,
 }: NewTeacherDialogProps) {
-  const [selectedSpecialties, setSelectedSpecialties] = React.useState<string[]>([]);
   const [selectedTimezone, setSelectedTimezone] = React.useState<string>("");
   const [scheduleInput, setScheduleInput] = React.useState<string>("");
 
@@ -94,8 +76,6 @@ export default function NewTeacherDialog({
       email: "",
       phone: "",
       timezone: "",
-      specialties: [],
-      experience: "",
       schedule: "",
       bio: "",
     },
@@ -131,19 +111,10 @@ export default function NewTeacherDialog({
     return `${daysPart} ${convertedStartHour}:${startMin}-${convertedEndHour}:${endMin}`;
   };
 
-  const handleSpecialtyToggle = (specialty: string) => {
-    const updated = selectedSpecialties.includes(specialty)
-      ? selectedSpecialties.filter((s) => s !== specialty)
-      : [...selectedSpecialties, specialty];
-    
-    setSelectedSpecialties(updated);
-    form.setValue("specialties", updated);
-  };
 
   const handleSubmit = (data: TeacherFormData) => {
     onSubmit(data);
     form.reset();
-    setSelectedSpecialties([]);
     setSelectedTimezone("");
     setScheduleInput("");
     onOpenChange(false);
@@ -247,77 +218,33 @@ export default function NewTeacherDialog({
               
               <FormField
                 control={form.control}
-                name="specialties"
+                name="schedule"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Especialidades</FormLabel>
+                    <FormLabel>Horario Disponible</FormLabel>
                     <FormControl>
-                      <div className="flex flex-wrap gap-2">
-                        {SPECIALTIES.map((specialty) => (
-                          <Badge
-                            key={specialty}
-                            variant={selectedSpecialties.includes(specialty) ? "default" : "outline"}
-                            className="cursor-pointer"
-                            onClick={() => handleSpecialtyToggle(specialty)}
-                          >
-                            {specialty}
-                            {selectedSpecialties.includes(specialty) && (
-                              <X className="ml-1 h-3 w-3" />
-                            )}
-                          </Badge>
-                        ))}
-                      </div>
+                      <Input 
+                        placeholder="L-V 7:00-12:00" 
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setScheduleInput(e.target.value);
+                        }}
+                      />
                     </FormControl>
+                    {selectedTimezone && scheduleInput && (
+                      <FormDescription className="flex items-center gap-2 mt-2">
+                        <span className="text-sm">{scheduleInput}</span>
+                        <ArrowRight className="h-4 w-4" />
+                        <span className="text-sm font-medium">
+                          {convertSchedule(scheduleInput, selectedTimezone)} (Hora Local)
+                        </span>
+                      </FormDescription>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="experience"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Años de Experiencia</FormLabel>
-                      <FormControl>
-                        <Input placeholder="5 años" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="schedule"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Horario Disponible</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="L-V 7:00-12:00" 
-                          {...field}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            setScheduleInput(e.target.value);
-                          }}
-                        />
-                      </FormControl>
-                      {selectedTimezone && scheduleInput && (
-                        <FormDescription className="flex items-center gap-2 mt-2">
-                          <span className="text-sm">{scheduleInput}</span>
-                          <ArrowRight className="h-4 w-4" />
-                          <span className="text-sm font-medium">
-                            {convertSchedule(scheduleInput, selectedTimezone)} (Hora Local)
-                          </span>
-                        </FormDescription>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
               <FormField
                 control={form.control}
