@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import ClassScheduler from "../components/ClassScheduler";
+import AddStudentDialog from "../components/AddStudentDialog";
 
 export default function StudentsPage() {
   const [activeTab, setActiveTab] = useState("students");
@@ -35,6 +36,7 @@ export default function StudentsPage() {
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   const [schedulerGroup, setSchedulerGroup] = useState<any>(null);
+  const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
 
   // Mock student data
   const students = [
@@ -156,8 +158,8 @@ export default function StudentsPage() {
       level: "A1",
       teacher: "María González",
       schedule: "Lun/Mié 16:00-17:30",
-      students: 12,
-      maxStudents: 15,
+      students: 3,
+      maxStudents: 4,
       startDate: "2024-11-01",
       endDate: "2024-11-30",
       progress: 75,
@@ -172,8 +174,8 @@ export default function StudentsPage() {
       level: "A2",
       teacher: "Carlos Ruiz",
       schedule: "Mar/Jue 10:00-11:30",
-      students: 8,
-      maxStudents: 12,
+      students: 4,
+      maxStudents: 4,
       startDate: "2024-11-01",
       endDate: "2024-11-30",
       progress: 75,
@@ -188,8 +190,8 @@ export default function StudentsPage() {
       level: "B1",
       teacher: "Ana Martín",
       schedule: "Lun/Mié 11:00-12:30",
-      students: 10,
-      maxStudents: 12,
+      students: 2,
+      maxStudents: 4,
       startDate: "2024-11-01",
       endDate: "2024-11-30",
       progress: 75,
@@ -204,8 +206,8 @@ export default function StudentsPage() {
       level: "B2",
       teacher: "Sofia López",
       schedule: "Mar/Jue 18:00-19:30",
-      students: 6,
-      maxStudents: 8,
+      students: 3,
+      maxStudents: 4,
       startDate: "2024-11-01",
       endDate: "2024-11-30",
       progress: 75,
@@ -220,8 +222,8 @@ export default function StudentsPage() {
       level: "C1",
       teacher: "María González",
       schedule: "Sáb 09:00-12:00",
-      students: 5,
-      maxStudents: 6,
+      students: 1,
+      maxStudents: 4,
       startDate: "2024-11-01",
       endDate: "2024-11-30",
       progress: 75,
@@ -229,6 +231,22 @@ export default function StudentsPage() {
       description: "Preparación intensiva para el examen DELE C1",
       avgAttendance: 98,
       location: "Aula 401"
+    },
+    {
+      id: 6,
+      name: "C2 Perfeccionamiento",
+      level: "C2",
+      teacher: "Diego Fernandez",
+      schedule: "Vie 14:00-16:00",
+      students: 4,
+      maxStudents: 4,
+      startDate: "2024-11-01",
+      endDate: "2024-11-30",
+      progress: 75,
+      nextClass: "Viernes 14:00",
+      description: "Perfeccionamiento avanzado del idioma",
+      avgAttendance: 100,
+      location: "Aula 501"
     },
   ];
 
@@ -276,7 +294,10 @@ export default function StudentsPage() {
           <h2 className="text-[var(--secondary-blue)] text-3xl font-bold leading-tight">Estudiantes</h2>
           <p className="text-[var(--neutral-gray)] mt-1">Gestiona tu lista de estudiantes y sigue su progreso.</p>
         </div>
-        <Button className="bg-[var(--primary-green)] hover:opacity-90 text-white">
+        <Button 
+          className="bg-[var(--primary-green)] hover:opacity-90 text-white"
+          onClick={() => setIsAddStudentOpen(true)}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Agregar Estudiante
         </Button>
@@ -449,7 +470,7 @@ export default function StudentsPage() {
                           </div>
                           <div className="flex items-center text-sm">
                             <Users className="h-4 w-4 mr-2 text-[var(--neutral-gray)]" />
-                            {group.students}/{group.maxStudents} estudiantes
+                            {group.students}/4 estudiantes
                           </div>
                           <div className="flex items-center text-sm">
                             <Calendar className="h-4 w-4 mr-2 text-[var(--neutral-gray)]" />
@@ -607,8 +628,8 @@ export default function StudentsPage() {
                         <div className="flex items-center justify-between">
                           <span className="text-sm">Capacidad</span>
                           <div className="flex items-center">
-                            <span className="font-medium">{selectedGroupData.students}/{selectedGroupData.maxStudents}</span>
-                            {selectedGroupData.students >= selectedGroupData.maxStudents && (
+                            <span className="font-medium">{selectedGroupData.students}/4</span>
+                            {selectedGroupData.students >= 4 && (
                               <Badge className="ml-2 text-xs bg-[var(--neutral-gray)] text-white">Lleno</Badge>
                             )}
                           </div>
@@ -892,6 +913,20 @@ export default function StudentsPage() {
           }}
         />
       )}
+
+      {/* Add Student Dialog */}
+      <AddStudentDialog
+        open={isAddStudentOpen}
+        onOpenChange={setIsAddStudentOpen}
+        groups={groups}
+        onSubmit={(data) => {
+          console.log("Nuevo estudiante:", data);
+          // Aquí se implementaría la lógica para guardar el estudiante
+          // Por ahora solo mostramos en consola
+          alert(`Estudiante ${data.name} agregado exitosamente`);
+          setIsAddStudentOpen(false);
+        }}
+      />
     </div>
   );
 }

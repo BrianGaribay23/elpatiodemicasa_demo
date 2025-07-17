@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Plus, Mail, Phone, Star } from "lucide-react";
+import { Search, Plus, Mail, Phone } from "lucide-react";
 import NewTeacherDialog from "../components/NewTeacherDialog";
 
 export default function TeachersPage() {
@@ -15,54 +14,52 @@ export default function TeachersPage() {
     {
       id: 1,
       name: "María González",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maria",
       email: "maria.gonzalez@elpatiodemicasa.com",
       phone: "+52 555 111 2222",
-      specialties: ["Yoga", "Pilates"],
-      experience: "5 años",
-      rating: 4.8,
+      assignedLevels: ["A1", "A2", "B1"],
       totalClasses: 320,
       status: "Activo",
       schedule: "L-V 7:00-12:00",
     },
     {
       id: 2,
-      name: "Juan Pérez",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=juan",
-      email: "juan.perez@elpatiodemicasa.com",
+      name: "Carlos Ruiz",
+      email: "carlos.ruiz@elpatiodemicasa.com",
       phone: "+52 555 333 4444",
-      specialties: ["CrossFit", "Funcional"],
-      experience: "3 años",
-      rating: 4.6,
+      assignedLevels: ["A2", "B1", "B2"],
       totalClasses: 180,
       status: "Activo",
       schedule: "L-S 15:00-20:00",
     },
     {
       id: 3,
-      name: "Sofia Ramírez",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sofia",
-      email: "sofia.ramirez@elpatiodemicasa.com",
+      name: "Ana Martín",
+      email: "ana.martin@elpatiodemicasa.com",
       phone: "+52 555 555 6666",
-      specialties: ["Zumba", "Baile"],
-      experience: "2 años",
-      rating: 4.9,
+      assignedLevels: ["B1", "B2", "C1"],
       totalClasses: 120,
       status: "Activo",
       schedule: "M-J-S 18:00-21:00",
     },
     {
       id: 4,
-      name: "Roberto Torres",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=roberto",
-      email: "roberto.torres@elpatiodemicasa.com",
+      name: "Sofia López",
+      email: "sofia.lopez@elpatiodemicasa.com",
       phone: "+52 555 777 8888",
-      specialties: ["Natación"],
-      experience: "7 años",
-      rating: 4.7,
+      assignedLevels: ["B2", "C1", "C2"],
       totalClasses: 450,
       status: "Vacaciones",
       schedule: "L-V 6:00-10:00",
+    },
+    {
+      id: 5,
+      name: "Diego Fernandez",
+      email: "diego.fernandez@elpatiodemicasa.com",
+      phone: "+52 555 999 0000",
+      assignedLevels: ["A1", "A2", "B1", "B2"],
+      totalClasses: 280,
+      status: "Activo",
+      schedule: "L-V 14:00-19:00",
     },
   ];
 
@@ -131,33 +128,24 @@ export default function TeachersPage() {
             <TableHeader>
               <TableRow className="bg-gray-50 border-b border-[var(--border-color)]">
                 <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Profesor</TableHead>
-                <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Especialidades</TableHead>
+                <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Niveles Asignados</TableHead>
                 <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Contacto</TableHead>
-                <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Experiencia</TableHead>
-                <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Calificación</TableHead>
                 <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Total Clases</TableHead>
                 <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Horario</TableHead>
                 <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Estado</TableHead>
-                <TableHead className="text-xs font-medium uppercase tracking-wider text-[var(--neutral-gray)]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {teachers.map((teacher) => (
                 <TableRow key={teacher.id}>
                   <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <Avatar>
-                        <AvatarImage src={teacher.avatar} alt={teacher.name} />
-                        <AvatarFallback>{teacher.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium text-[var(--text-primary)]">{teacher.name}</span>
-                    </div>
+                    <span className="font-medium text-[var(--text-primary)]">{teacher.name}</span>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
-                      {teacher.specialties.map((specialty) => (
-                        <Badge key={specialty} variant="outline" className="text-xs">
-                          {specialty}
+                      {teacher.assignedLevels.map((level) => (
+                        <Badge key={level} className="bg-[var(--secondary-blue)] text-white text-xs">
+                          {level}
                         </Badge>
                       ))}
                     </div>
@@ -174,13 +162,6 @@ export default function TeachersPage() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{teacher.experience}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                      {teacher.rating}
-                    </div>
-                  </TableCell>
                   <TableCell>{teacher.totalClasses}</TableCell>
                   <TableCell className="text-sm">{teacher.schedule}</TableCell>
                   <TableCell>
@@ -193,9 +174,6 @@ export default function TeachersPage() {
                         {teacher.status}
                       </span>
                     )}
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="sm" className="text-[var(--secondary-blue)]">Ver perfil</Button>
                   </TableCell>
                 </TableRow>
               ))}
