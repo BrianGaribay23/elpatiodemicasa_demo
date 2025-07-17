@@ -687,8 +687,8 @@ const UserManagement = () => {
       {/* Diálogo de Crear/Editar Coordinador */}
       <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
         <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle className="text-purple-800">
+          <DialogHeader className="pb-4 border-b border-gray-100">
+            <DialogTitle className="text-2xl font-semibold text-[var(--primary-green)]">
               {editingUser ? "Editar Coordinador Académico" : "Nuevo Coordinador Académico"}
             </DialogTitle>
           </DialogHeader>
@@ -761,16 +761,16 @@ const UserManagement = () => {
                 </div>
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="pt-4 border-t border-gray-100">
               <Button 
                 type="button"
                 variant="outline" 
                 onClick={() => setShowUserDialog(false)}
-                className="border-gris-corporativo-300 text-gris-corporativo-700 hover:bg-gris-corporativo-50"
+                className="border-[var(--neutral-gray)] text-[var(--neutral-gray)] hover:bg-gray-50"
               >
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">
+              <Button type="submit" className="bg-[var(--primary-green)] hover:bg-[var(--primary-green)]/90 text-white">
                 {editingUser ? "Guardar Cambios" : "Crear Coordinador"}
               </Button>
             </DialogFooter>

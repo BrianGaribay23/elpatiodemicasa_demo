@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CalendarView } from "@/modules/shared";
+import QuickTrialClassDialog from "../components/QuickTrialClassDialog";
 import { 
   CalendarDays, 
   Users, 
@@ -12,7 +13,8 @@ import {
   Globe,
   RefreshCw,
   TrendingDown,
-  DollarSign
+  DollarSign,
+  UserPlus
 } from "lucide-react";
 import {
   LineChart,
@@ -30,6 +32,7 @@ import {
 } from "recharts";
 
 export default function DashboardPage() {
+  const [isQuickTrialOpen, setIsQuickTrialOpen] = React.useState(false);
   // Mock data for today's schedule
   const todaySchedule = [
     {
@@ -538,7 +541,22 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <div className="px-4">
         <h3 className="text-[var(--secondary-blue)] text-2xl font-bold tracking-tight pb-4">Acciones Rápidas</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card 
+            className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]"
+            onClick={() => setIsQuickTrialOpen(true)}
+          >
+            <CardContent className="p-6 flex items-center space-x-4">
+              <div className="p-3 bg-[#E8F5E8] rounded-lg">
+                <UserPlus className="h-6 w-6 text-[var(--primary-green)]" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-[var(--text-primary)]">Clase de Prueba</h4>
+                <p className="text-sm text-[var(--text-secondary)]">Programa clase rápida</p>
+              </div>
+            </CardContent>
+          </Card>
+          
           <Card className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]">
             <CardContent className="p-6 flex items-center space-x-4">
               <div className="p-3 bg-[#EAF2ED] rounded-lg">
@@ -576,6 +594,12 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
+
+      {/* Quick Trial Class Dialog */}
+      <QuickTrialClassDialog
+        open={isQuickTrialOpen}
+        onOpenChange={setIsQuickTrialOpen}
+      />
     </div>
   );
 }

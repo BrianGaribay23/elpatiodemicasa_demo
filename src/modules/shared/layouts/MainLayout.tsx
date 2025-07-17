@@ -95,12 +95,6 @@ export default function MainLayout() {
             Profesores
           </Link>
           <Link 
-            to="/calendar" 
-            className={location.pathname === "/calendar" ? "text-[var(--primary-green)] font-semibold border-b-2 border-[var(--primary-green)] pb-1" : "hover:text-[var(--primary-green)] transition-colors"}
-          >
-            Calendario
-          </Link>
-          <Link 
             to="/finance" 
             className={location.pathname === "/finance" ? "text-[var(--primary-green)] font-semibold border-b-2 border-[var(--primary-green)] pb-1" : "hover:text-[var(--primary-green)] transition-colors"}
           >
