@@ -7,6 +7,7 @@ import { CalendarView } from "@/modules/shared";
 import QuickTrialClassDialog from "../components/QuickTrialClassDialog";
 import AddStudentDialog from "@/modules/students/components/AddStudentDialog";
 import ClassDetailsDialog from "../components/ClassDetailsDialog";
+import "../styles/QuickActions.css";
 import { 
   CalendarDays, 
   Users, 
@@ -187,18 +188,18 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="px-4">
-        <h3 className="text-[var(--secondary-blue)] text-2xl font-bold tracking-tight pb-4">Acciones Rápidas</h3>
+        <h3 className="text-[var(--secondary-blue)] text-2xl font-bold tracking-tight pb-4 quick-actions-title">Acciones Rápidas</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card 
-            className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-[var(--border-color)] hover:border-[var(--primary-green)] group"
+            className="quick-action-card hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-[var(--border-color)] hover:border-[var(--primary-green)] group relative"
             onClick={() => setIsQuickTrialOpen(true)}
           >
             <CardContent className="p-6">
               <div className="flex items-start space-x-4">
-                <div className="p-3 bg-[#E8F5E8] rounded-lg group-hover:scale-110 transition-transform">
+                <div className="p-3 bg-[#E8F5E8] rounded-lg group-hover:scale-110 transition-transform quick-action-icon">
                   <UserPlus className="h-6 w-6 text-[var(--primary-green)]" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 quick-action-content">
                   <h4 className="font-semibold text-[var(--text-primary)] text-lg">Clase de Prueba</h4>
                   <p className="text-sm text-[var(--text-secondary)] mt-1">Programa una clase muestra rápida</p>
                   <div className="mt-3 flex items-center justify-between">
@@ -207,7 +208,7 @@ export default function DashboardPage() {
                       <span className="mx-2">•</span>
                       <span>2 pasos</span>
                     </div>
-                    <Badge className="bg-[var(--primary-green)] text-white">
+                    <Badge className="bg-[var(--primary-green)] text-white quick-action-badge">
                       {stats.pendingTrialClasses} pendientes
                     </Badge>
                   </div>
@@ -217,15 +218,15 @@ export default function DashboardPage() {
           </Card>
           
           <Card 
-            className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-[var(--border-color)] hover:border-[var(--secondary-blue)] group"
+            className="quick-action-card hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-[var(--border-color)] hover:border-[var(--secondary-blue)] group relative"
             onClick={() => setIsAddStudentOpen(true)}
           >
             <CardContent className="p-6">
               <div className="flex items-start space-x-4">
-                <div className="p-3 bg-[#EAF0F6] rounded-lg group-hover:scale-110 transition-transform">
+                <div className="p-3 bg-[#EAF0F6] rounded-lg group-hover:scale-110 transition-transform quick-action-icon">
                   <Users className="h-6 w-6 text-[var(--secondary-blue)]" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 quick-action-content">
                   <h4 className="font-semibold text-[var(--text-primary)] text-lg">Agregar Estudiante</h4>
                   <p className="text-sm text-[var(--text-secondary)] mt-1">Registra un nuevo alumno al sistema</p>
                   <div className="mt-3 flex items-center justify-between">
@@ -234,7 +235,7 @@ export default function DashboardPage() {
                       <span className="mx-2">•</span>
                       <span>Por nivel</span>
                     </div>
-                    <Badge className="bg-[var(--secondary-blue)] text-white">
+                    <Badge className="bg-[var(--secondary-blue)] text-white quick-action-badge">
                       +{stats.newStudentsThisWeek} esta semana
                     </Badge>
                   </div>
@@ -244,15 +245,15 @@ export default function DashboardPage() {
           </Card>
           
           <Card 
-            className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-[var(--border-color)] hover:border-[var(--accent-orange)] group"
+            className="quick-action-card hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-[var(--border-color)] hover:border-[var(--accent-orange)] group relative"
             onClick={() => setActiveTab("analytics")}
           >
             <CardContent className="p-6">
               <div className="flex items-start space-x-4">
-                <div className="p-3 bg-[#FEF5EC] rounded-lg group-hover:scale-110 transition-transform">
+                <div className="p-3 bg-[#FEF5EC] rounded-lg group-hover:scale-110 transition-transform quick-action-icon">
                   <FileBarChart className="h-6 w-6 text-[var(--accent-orange)]" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 quick-action-content">
                   <h4 className="font-semibold text-[var(--text-primary)] text-lg">Ver Reportes</h4>
                   <p className="text-sm text-[var(--text-secondary)] mt-1">Análisis detallado y estadísticas</p>
                   <div className="mt-3 flex items-center justify-between">
@@ -261,7 +262,7 @@ export default function DashboardPage() {
                       <span className="mx-2">•</span>
                       <span>Gráficos</span>
                     </div>
-                    <Badge className="bg-[var(--accent-orange)] text-white">
+                    <Badge className="bg-[var(--accent-orange)] text-white quick-action-badge">
                       {stats.reportUpdates} actualizaciones
                     </Badge>
                   </div>

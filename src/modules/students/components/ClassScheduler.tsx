@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, getDay, addMonths } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -30,6 +30,7 @@ interface GroupInfo {
   teacher: string;
   schedule: string; // e.g., "Lun/Mié 16:00-17:30"
   students: number;
+  studentsList?: string[]; // Lista de nombres de estudiantes
   classroom: string;
 }
 
@@ -50,6 +51,7 @@ interface ScheduledClass {
   teacher: string;
   classroom: string;
   level: string;
+  students?: string[]; // Estudiantes incluidos en esta clase
   zoomRoomId?: string;
   zoomLink?: string;
   zoomPassword?: string;
@@ -85,7 +87,16 @@ export default function ClassScheduler({
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [excludedDates, setExcludedDates] = useState<Date[]>([]);
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [showPreview, setShowPreview] = useState(false);
+  const [showStudentSelection, setShowStudentSelection] = useState(false);
+
+  // Initialize selected students with all students when component mounts
+  useEffect(() => {
+    if (group.studentsList) {
+      setSelectedStudents([...group.studentsList]);
+    }
+  }, [group.studentsList]);
 
   // Parse schedule to get days and times
   const parseSchedule = (schedule: string) => {
@@ -177,6 +188,7 @@ export default function ClassScheduler({
           teacher: group.teacher,
           classroom: group.classroom,
           level: group.level,
+          students: selectedStudents, // Include selected students
           zoomRoomId: result.zoomRoom.id,
           zoomLink: result.zoomRoom.meetingUrl,
           zoomPassword: result.zoomRoom.passcode,
@@ -193,6 +205,7 @@ export default function ClassScheduler({
           teacher: group.teacher,
           classroom: group.classroom,
           level: group.level,
+          students: selectedStudents, // Include selected students
         });
       }
     }
@@ -208,7 +221,20 @@ export default function ClassScheduler({
     // Reset state
     setSelectedDates([]);
     setExcludedDates([]);
+    setSelectedStudents(group.studentsList || []);
     setShowPreview(false);
+    setShowStudentSelection(false);
+  };
+
+  // Toggle student selection
+  const toggleStudent = (studentName: string) => {
+    setSelectedStudents(prev => {
+      if (prev.includes(studentName)) {
+        return prev.filter(s => s !== studentName);
+      } else {
+        return [...prev, studentName];
+      }
+    });
   };
 
   // Render calendar
@@ -370,6 +396,74 @@ export default function ClassScheduler({
                 </AlertDescription>
               </Alert>
 
+              {/* Student Selection Section */}
+              {group.studentsList && group.studentsList.length > 0 && (
+                <Card>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        <h4 className="font-medium">Estudiantes del Grupo</h4>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowStudentSelection(!showStudentSelection)}
+                      >
+                        {showStudentSelection ? "Ocultar" : "Seleccionar"} Estudiantes
+                      </Button>
+                    </div>
+                    
+                    {showStudentSelection ? (
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center mb-2">
+                          <p className="text-sm text-muted-foreground">
+                            Selecciona qué estudiantes asistirán a las clases:
+                          </p>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedStudents([...group.studentsList!])}
+                            >
+                              Seleccionar todos
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedStudents([])}
+                            >
+                              Quitar todos
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          {group.studentsList.map((student, index) => (
+                            <div key={index} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`student-${index}`}
+                                checked={selectedStudents.includes(student)}
+                                onCheckedChange={() => toggleStudent(student)}
+                              />
+                              <label
+                                htmlFor={`student-${index}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                              >
+                                {student}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        {selectedStudents.length} de {group.studentsList.length} estudiantes seleccionados
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Zoom Room Availability Info */}
               <Card className="bg-blue-50 border-blue-200">
                 <CardContent className="pt-4">
@@ -389,6 +483,14 @@ export default function ClassScheduler({
                 <Card>
                   <CardContent className="pt-6">
                     <h4 className="font-medium mb-3">Vista Previa de Clases:</h4>
+                    {selectedStudents.length < (group.studentsList?.length || 0) && (
+                      <Alert className="mb-3">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                          Solo {selectedStudents.length} de {group.studentsList?.length} estudiantes asistirán a estas clases.
+                        </AlertDescription>
+                      </Alert>
+                    )}
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {getFinalDates().map((date, index) => {
                         // Check Zoom availability for this date/time
