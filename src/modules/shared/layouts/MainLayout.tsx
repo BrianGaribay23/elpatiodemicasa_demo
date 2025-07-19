@@ -1,5 +1,4 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Bell,
   LogOut,
@@ -76,12 +75,14 @@ export default function MainLayout() {
           >
             Dashboard
           </Link>
-          <Link 
-            to="/users" 
-            className={location.pathname === "/users" ? "text-[var(--primary-green)] font-semibold border-b-2 border-[var(--primary-green)] pb-1" : "hover:text-[var(--primary-green)] transition-colors"}
-          >
-            Usuarios
-          </Link>
+          {user?.role === "ADMINISTRADOR_GENERAL" && (
+            <Link 
+              to="/users" 
+              className={location.pathname === "/users" ? "text-[var(--primary-green)] font-semibold border-b-2 border-[var(--primary-green)] pb-1" : "hover:text-[var(--primary-green)] transition-colors"}
+            >
+              Usuarios
+            </Link>
+          )}
           <Link 
             to="/students" 
             className={location.pathname === "/students" ? "text-[var(--primary-green)] font-semibold border-b-2 border-[var(--primary-green)] pb-1" : "hover:text-[var(--primary-green)] transition-colors"}
@@ -113,15 +114,9 @@ export default function MainLayout() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <Avatar className="size-10 border-2 border-[var(--primary-green)] cursor-pointer">
-                  <AvatarImage 
-                    src={user ? `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}` : ""} 
-                    alt={user?.name || ""} 
-                  />
-                  <AvatarFallback>
-                    {user?.name?.split(' ').map(n => n[0]).join('') || "U"}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="size-10 border-2 border-[var(--primary-green)] cursor-pointer rounded-full bg-[var(--primary-green)] text-white flex items-center justify-center font-semibold">
+                  {user?.name?.split(' ').map(n => n[0]).join('') || "U"}
+                </div>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">

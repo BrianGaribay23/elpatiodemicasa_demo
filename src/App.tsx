@@ -36,7 +36,7 @@ function App() {
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="users" element={
-                <ProtectedRoute allowedRoles={["ADMINISTRADOR_GENERAL", "COORDINADOR_ACADEMICO"]}>
+                <ProtectedRoute allowedRoles={["ADMINISTRADOR_GENERAL"]}>
                   <UsersPage />
                 </ProtectedRoute>
               } />
