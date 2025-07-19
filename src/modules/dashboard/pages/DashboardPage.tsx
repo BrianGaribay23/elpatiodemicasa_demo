@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CalendarView } from "@/modules/shared";
 import QuickTrialClassDialog from "../components/QuickTrialClassDialog";
+import AddStudentDialog from "@/modules/students/components/AddStudentDialog";
+import QuickStudentSearchDialog from "../components/QuickStudentSearchDialog";
 import { 
   CalendarDays, 
   Users, 
@@ -14,7 +16,8 @@ import {
   RefreshCw,
   TrendingDown,
   DollarSign,
-  UserPlus
+  UserPlus,
+  Search
 } from "lucide-react";
 import {
   LineChart,
@@ -33,6 +36,77 @@ import {
 
 export default function DashboardPage() {
   const [isQuickTrialOpen, setIsQuickTrialOpen] = React.useState(false);
+  const [isAddStudentOpen, setIsAddStudentOpen] = React.useState(false);
+  const [isStudentSearchOpen, setIsStudentSearchOpen] = React.useState(false);
+  
+  // Mock data for groups - same as in StudentsPage
+  const groups = [
+    {
+      id: 1,
+      name: "A1 Principiantes",
+      level: "A1",
+      teacher: "María González",
+      schedule: "Lun/Mié 16:00-17:30",
+      students: 3,
+      maxStudents: 4,
+      startDate: "2024-11-01",
+      endDate: "2024-11-30",
+      progress: 75,
+      nextClass: "Hoy 16:00",
+      description: "Curso mensual para principiantes absolutos",
+      avgAttendance: 92,
+      location: "Aula 101"
+    },
+    {
+      id: 2,
+      name: "A2 Gramática Intensiva",
+      level: "A2",
+      teacher: "Carlos Ruiz",
+      schedule: "Mar/Jue 10:00-11:30",
+      students: 4,
+      maxStudents: 4,
+      startDate: "2024-11-01",
+      endDate: "2024-11-30",
+      progress: 75,
+      nextClass: "Mañana 10:00",
+      description: "Enfoque en estructuras gramaticales básicas",
+      avgAttendance: 88,
+      location: "Aula 203"
+    },
+    {
+      id: 3,
+      name: "B1 Intermedio",
+      level: "B1",
+      teacher: "Ana Martín",
+      schedule: "Lun/Mié 11:00-12:30",
+      students: 2,
+      maxStudents: 4,
+      startDate: "2024-11-01",
+      endDate: "2024-11-30",
+      progress: 75,
+      nextClass: "Hoy 11:00",
+      description: "Desarrollo de habilidades comunicativas intermedias",
+      avgAttendance: 94,
+      location: "Aula 102"
+    },
+    {
+      id: 4,
+      name: "B2 Conversación Avanzada",
+      level: "B2",
+      teacher: "Sofia López",
+      schedule: "Lun/Mié 14:00-15:30",
+      students: 3,
+      maxStudents: 4,
+      startDate: "2024-11-01",
+      endDate: "2024-11-30",
+      progress: 75,
+      nextClass: "Hoy 14:00",
+      description: "Práctica conversacional para estudiantes avanzados",
+      avgAttendance: 96,
+      location: "Aula 201"
+    }
+  ];
+  
   // Mock data for today's schedule
   const todaySchedule = [
     {
@@ -182,27 +256,62 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Metrics Cards */}
+      {/* Metrics Cards - Now Actionable */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-        <div className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--primary-green)]">
-          <p className="text-[var(--neutral-gray)] text-base font-medium">Clases Hoy</p>
+        <div 
+          className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--primary-green)] cursor-pointer hover:shadow-lg transition-all hover:scale-105 group"
+          onClick={() => {
+            // Scroll to calendar section
+            const calendarSection = document.querySelector('[data-calendar-section]');
+            calendarSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+        >
+          <div className="flex justify-between items-start">
+            <p className="text-[var(--neutral-gray)] text-base font-medium">Clases Hoy</p>
+            <CalendarDays className="h-5 w-5 text-[var(--primary-green)] opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
           <p className="text-[var(--text-primary)] text-4xl font-bold">24</p>
           <p className="text-sm text-[var(--text-secondary)]">16 individuales • 8 grupales</p>
+          <p className="text-xs text-[var(--primary-green)] opacity-0 group-hover:opacity-100 transition-opacity mt-2">Click para ver calendario</p>
         </div>
-        <div className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--secondary-blue)]">
-          <p className="text-[var(--neutral-gray)] text-base font-medium">Estudiantes Activos</p>
+        
+        <div 
+          className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--secondary-blue)] cursor-pointer hover:shadow-lg transition-all hover:scale-105 group"
+          onClick={() => setIsStudentSearchOpen(true)}
+        >
+          <div className="flex justify-between items-start">
+            <p className="text-[var(--neutral-gray)] text-base font-medium">Estudiantes Activos</p>
+            <Search className="h-5 w-5 text-[var(--secondary-blue)] opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
           <p className="text-[var(--text-primary)] text-4xl font-bold">156</p>
           <p className="text-sm text-[var(--text-secondary)]">De 15 países</p>
+          <p className="text-xs text-[var(--secondary-blue)] opacity-0 group-hover:opacity-100 transition-opacity mt-2">Click para buscar estudiantes</p>
         </div>
-        <div className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--accent-orange)]">
-          <p className="text-[var(--neutral-gray)] text-base font-medium">Tasa de Asistencia</p>
+        
+        <div 
+          className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--accent-orange)] cursor-pointer hover:shadow-lg transition-all hover:scale-105 group"
+          onClick={() => setIsQuickTrialOpen(true)}
+        >
+          <div className="flex justify-between items-start">
+            <p className="text-[var(--neutral-gray)] text-base font-medium">Tasa de Asistencia</p>
+            <Users className="h-5 w-5 text-[var(--accent-orange)] opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
           <p className="text-[var(--text-primary)] text-4xl font-bold">94%</p>
           <p className="text-sm text-[var(--text-secondary)]">Promedio semanal</p>
+          <p className="text-xs text-[var(--accent-orange)] opacity-0 group-hover:opacity-100 transition-opacity mt-2">Click para clase de prueba</p>
         </div>
-        <div className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--neutral-gray)]">
-          <p className="text-[var(--neutral-gray)] text-base font-medium">Nuevos Estudiantes</p>
+        
+        <div 
+          className="flex flex-col gap-2 rounded-xl p-6 bg-[var(--card-background)] shadow-md border-l-4 border-[var(--neutral-gray)] cursor-pointer hover:shadow-lg transition-all hover:scale-105 group"
+          onClick={() => setIsAddStudentOpen(true)}
+        >
+          <div className="flex justify-between items-start">
+            <p className="text-[var(--neutral-gray)] text-base font-medium">Nuevos Estudiantes</p>
+            <UserPlus className="h-5 w-5 text-[var(--neutral-gray)] opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
           <p className="text-[var(--text-primary)] text-4xl font-bold">12</p>
           <p className="text-sm text-[var(--text-secondary)]">Este mes</p>
+          <p className="text-xs text-[var(--neutral-gray)] opacity-0 group-hover:opacity-100 transition-opacity mt-2">Click para agregar estudiante</p>
         </div>
       </div>
 
@@ -219,43 +328,6 @@ export default function DashboardPage() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6 mt-6">
-          {/* Today's Schedule */}
-          <div>
-            <h3 className="text-[var(--secondary-blue)] text-2xl font-bold tracking-tight pb-4">Horario de Hoy</h3>
-            <div className="overflow-x-auto rounded-lg border border-[var(--border-color)] bg-[var(--card-background)] shadow-md">
-              <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b-2 border-[var(--border-color)]">
-                  <tr className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-gray)]">
-                    <th className="px-6 py-4">Hora</th>
-                    <th className="px-6 py-4">Clase</th>
-                    <th className="px-6 py-4">Profesor</th>
-                    <th className="px-6 py-4">Estudiante</th>
-                    <th className="px-6 py-4 text-center">Estado</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[var(--border-color)]">
-                  {todaySchedule.map((item, index) => (
-                    <tr 
-                      key={index} 
-                      className={`text-[var(--text-secondary)] hover:bg-gray-50 ${item.status === 'conflict' ? 'bg-orange-50/50' : ''}`}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-primary)]">
-                        {item.time}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-primary)]">
-                        {item.class}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">{item.teacher}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">{item.student}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                        {getStatusBadge(item.status)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
 
           {/* Widgets Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -373,7 +445,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Calendar Section */}
-          <Card className="shadow-md border-[var(--border-color)]">
+          <Card className="shadow-md border-[var(--border-color)]" data-calendar-section>
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-[var(--text-primary)]">Calendario de Clases</CardTitle>
             </CardHeader>
@@ -538,67 +610,30 @@ export default function DashboardPage() {
         </TabsContent>
       </Tabs>
 
-      {/* Quick Actions */}
-      <div className="px-4">
-        <h3 className="text-[var(--secondary-blue)] text-2xl font-bold tracking-tight pb-4">Acciones Rápidas</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card 
-            className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]"
-            onClick={() => setIsQuickTrialOpen(true)}
-          >
-            <CardContent className="p-6 flex items-center space-x-4">
-              <div className="p-3 bg-[#E8F5E8] rounded-lg">
-                <UserPlus className="h-6 w-6 text-[var(--primary-green)]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[var(--text-primary)]">Clase de Prueba</h4>
-                <p className="text-sm text-[var(--text-secondary)]">Programa clase rápida</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]">
-            <CardContent className="p-6 flex items-center space-x-4">
-              <div className="p-3 bg-[#EAF2ED] rounded-lg">
-                <CalendarDays className="h-6 w-6 text-[var(--primary-green)]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[var(--text-primary)]">Programar Clase</h4>
-                <p className="text-sm text-[var(--text-secondary)]">Agendar nuevas sesiones</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]">
-            <CardContent className="p-6 flex items-center space-x-4">
-              <div className="p-3 bg-[#EAF0F6] rounded-lg">
-                <Users className="h-6 w-6 text-[var(--secondary-blue)]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[var(--text-primary)]">Agregar Estudiante</h4>
-                <p className="text-sm text-[var(--text-secondary)]">Registrar nuevo alumno</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]">
-            <CardContent className="p-6 flex items-center space-x-4">
-              <div className="p-3 bg-[#FEF5EC] rounded-lg">
-                <TrendingUp className="h-6 w-6 text-[var(--accent-orange)]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[var(--text-primary)]">Ver Reportes</h4>
-                <p className="text-sm text-[var(--text-secondary)]">Análisis y estadísticas</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
 
       {/* Quick Trial Class Dialog */}
       <QuickTrialClassDialog
         open={isQuickTrialOpen}
         onOpenChange={setIsQuickTrialOpen}
+      />
+      
+      {/* Add Student Dialog */}
+      <AddStudentDialog
+        open={isAddStudentOpen}
+        onOpenChange={setIsAddStudentOpen}
+        groups={groups}
+        onSubmit={(data) => {
+          console.log("Nuevo estudiante:", data);
+          // En un demo, simplemente mostramos un mensaje de éxito
+          alert(`¡Estudiante ${data.name} agregado exitosamente al ${data.classType === 'group' ? 'grupo' : 'programa de clases individuales'}!`);
+          setIsAddStudentOpen(false);
+        }}
+      />
+      
+      {/* Quick Student Search Dialog */}
+      <QuickStudentSearchDialog
+        open={isStudentSearchOpen}
+        onOpenChange={setIsStudentSearchOpen}
       />
     </div>
   );
