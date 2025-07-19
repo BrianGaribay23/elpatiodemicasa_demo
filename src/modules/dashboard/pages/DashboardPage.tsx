@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CalendarView } from "@/modules/shared";
 import QuickTrialClassDialog from "../components/QuickTrialClassDialog";
+import AddStudentDialog from "@/modules/students/components/AddStudentDialog";
+import ClassDetailsDialog from "../components/ClassDetailsDialog";
 import { 
   CalendarDays, 
   Users, 
@@ -14,8 +16,10 @@ import {
   RefreshCw,
   TrendingDown,
   DollarSign,
-  UserPlus
+  UserPlus,
+  FileBarChart
 } from "lucide-react";
+import { format } from "date-fns";
 import {
   LineChart,
   Line,
@@ -32,43 +36,77 @@ import {
 } from "recharts";
 
 export default function DashboardPage() {
-  const [isQuickTrialOpen, setIsQuickTrialOpen] = React.useState(false);
-  // Mock data for today's schedule
-  const todaySchedule = [
+  const [isQuickTrialOpen, setIsQuickTrialOpen] = useState(false);
+  const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [selectedClass, setSelectedClass] = useState<any>(null);
+  const [isClassDetailsOpen, setIsClassDetailsOpen] = useState(false);
+  // Statistics for quick actions
+  const stats = {
+    pendingTrialClasses: 4,
+    todayTrialClasses: 2,
+    newStudentsThisWeek: 8,
+    totalActiveStudents: 156,
+    reportUpdates: 3
+  };
+
+
+
+  // Mock groups data for AddStudentDialog
+  const mockGroups = [
     {
-      time: "9:00 AM",
-      class: "Español Principiante",
-      teacher: "Elena Ramirez",
-      student: "Carlos Rodriguez",
-      status: "scheduled",
+      id: 1,
+      name: "A1 Principiantes",
+      level: "A1",
+      teacher: "María González",
+      schedule: "Lun/Mié 16:00-17:30",
+      students: 3,
+      maxStudents: 4,
     },
     {
-      time: "10:00 AM",
-      class: "Español Intermedio",
-      teacher: "Miguel Torres",
-      student: "Sofia Lopez",
-      status: "confirmed",
+      id: 2,
+      name: "A2 Básico",
+      level: "A2",
+      teacher: "Carlos Ruiz",
+      schedule: "Mar/Jue 18:00-19:30",
+      students: 2,
+      maxStudents: 4,
     },
     {
-      time: "11:00 AM",
-      class: "Español Avanzado",
-      teacher: "Isabella Garcia",
-      student: "Juan Martinez",
-      status: "completed",
+      id: 3,
+      name: "B1 Intermedio",
+      level: "B1",
+      teacher: "Ana Martín",
+      schedule: "Lun/Mié/Vie 17:00-18:00",
+      students: 4,
+      maxStudents: 4,
     },
     {
-      time: "12:00 PM",
-      class: "Conversación",
+      id: 4,
+      name: "B2 Avanzado",
+      level: "B2",
+      teacher: "Sofia López",
+      schedule: "Mar/Jue 19:00-20:30",
+      students: 3,
+      maxStudents: 4,
+    },
+    {
+      id: 5,
+      name: "C1 Superior",
+      level: "C1",
       teacher: "Diego Fernandez",
-      student: "Ana Perez",
-      status: "conflict",
+      schedule: "Vie 16:00-18:00",
+      students: 2,
+      maxStudents: 4,
     },
     {
-      time: "1:00 PM",
-      class: "Español de Negocios",
-      teacher: "Lucia Vargas",
-      student: "Luis Gomez",
-      status: "confirmed",
+      id: 6,
+      name: "C2 Maestría",
+      level: "C2",
+      teacher: "Roberto Torres",
+      schedule: "Sáb 10:00-12:00",
+      students: 4,
+      maxStudents: 4,
     },
   ];
 
@@ -132,41 +170,6 @@ export default function DashboardPage() {
     { month: "Nov", año2023: 36000, año2024: 42350 },
   ];
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "scheduled":
-        return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#EAF0F6] text-[var(--secondary-blue)]">
-            Programada
-          </span>
-        );
-      case "confirmed":
-        return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#EAF2ED] text-[var(--primary-green)]">
-            Confirmada
-          </span>
-        );
-      case "completed":
-        return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#EDEDEE] text-[var(--neutral-gray)]">
-            Completada
-          </span>
-        );
-      case "conflict":
-        return (
-          <span className="relative inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#FEF5EC] text-[var(--accent-orange)]">
-            Conflicto
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-            </span>
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -179,6 +182,93 @@ export default function DashboardPage() {
           <svg className="w-16 h-16" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M3.75 21v-3.75m16.5 3.75v-3.75m-16.5 0L12 3.75 20.25 17.25M3.75 17.25h16.5M12 21a9 9 0 00-9-9h18a9 9 0 00-9 9z" strokeLinecap="round" strokeLinejoin="round"></path>
           </svg>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="px-4">
+        <h3 className="text-[var(--secondary-blue)] text-2xl font-bold tracking-tight pb-4">Acciones Rápidas</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card 
+            className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-[var(--border-color)] hover:border-[var(--primary-green)] group"
+            onClick={() => setIsQuickTrialOpen(true)}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-start space-x-4">
+                <div className="p-3 bg-[#E8F5E8] rounded-lg group-hover:scale-110 transition-transform">
+                  <UserPlus className="h-6 w-6 text-[var(--primary-green)]" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-[var(--text-primary)] text-lg">Clase de Prueba</h4>
+                  <p className="text-sm text-[var(--text-secondary)] mt-1">Programa una clase muestra rápida</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex items-center text-xs text-[var(--primary-green)]">
+                      <span className="font-medium">Acción rápida</span>
+                      <span className="mx-2">•</span>
+                      <span>2 pasos</span>
+                    </div>
+                    <Badge className="bg-[var(--primary-green)] text-white">
+                      {stats.pendingTrialClasses} pendientes
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card 
+            className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-[var(--border-color)] hover:border-[var(--secondary-blue)] group"
+            onClick={() => setIsAddStudentOpen(true)}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-start space-x-4">
+                <div className="p-3 bg-[#EAF0F6] rounded-lg group-hover:scale-110 transition-transform">
+                  <Users className="h-6 w-6 text-[var(--secondary-blue)]" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-[var(--text-primary)] text-lg">Agregar Estudiante</h4>
+                  <p className="text-sm text-[var(--text-secondary)] mt-1">Registra un nuevo alumno al sistema</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex items-center text-xs text-[var(--secondary-blue)]">
+                      <span className="font-medium">Asignación automática</span>
+                      <span className="mx-2">•</span>
+                      <span>Por nivel</span>
+                    </div>
+                    <Badge className="bg-[var(--secondary-blue)] text-white">
+                      +{stats.newStudentsThisWeek} esta semana
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card 
+            className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 border-[var(--border-color)] hover:border-[var(--accent-orange)] group"
+            onClick={() => setActiveTab("analytics")}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-start space-x-4">
+                <div className="p-3 bg-[#FEF5EC] rounded-lg group-hover:scale-110 transition-transform">
+                  <FileBarChart className="h-6 w-6 text-[var(--accent-orange)]" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-[var(--text-primary)] text-lg">Ver Reportes</h4>
+                  <p className="text-sm text-[var(--text-secondary)] mt-1">Análisis detallado y estadísticas</p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <div className="flex items-center text-xs text-[var(--accent-orange)]">
+                      <span className="font-medium">Datos en tiempo real</span>
+                      <span className="mx-2">•</span>
+                      <span>Gráficos</span>
+                    </div>
+                    <Badge className="bg-[var(--accent-orange)] text-white">
+                      {stats.reportUpdates} actualizaciones
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
@@ -207,7 +297,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="px-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="px-4">
         <TabsList className="bg-gray-100 p-1 rounded-lg">
           <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-[var(--primary-green)]">
             Vista General
@@ -219,44 +309,6 @@ export default function DashboardPage() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6 mt-6">
-          {/* Today's Schedule */}
-          <div>
-            <h3 className="text-[var(--secondary-blue)] text-2xl font-bold tracking-tight pb-4">Horario de Hoy</h3>
-            <div className="overflow-x-auto rounded-lg border border-[var(--border-color)] bg-[var(--card-background)] shadow-md">
-              <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b-2 border-[var(--border-color)]">
-                  <tr className="text-xs font-semibold uppercase tracking-wider text-[var(--neutral-gray)]">
-                    <th className="px-6 py-4">Hora</th>
-                    <th className="px-6 py-4">Clase</th>
-                    <th className="px-6 py-4">Profesor</th>
-                    <th className="px-6 py-4">Estudiante</th>
-                    <th className="px-6 py-4 text-center">Estado</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[var(--border-color)]">
-                  {todaySchedule.map((item, index) => (
-                    <tr 
-                      key={index} 
-                      className={`text-[var(--text-secondary)] hover:bg-gray-50 ${item.status === 'conflict' ? 'bg-orange-50/50' : ''}`}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-primary)]">
-                        {item.time}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[var(--text-primary)]">
-                        {item.class}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">{item.teacher}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">{item.student}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                        {getStatusBadge(item.status)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
           {/* Widgets Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Level Distribution */}
@@ -373,14 +425,32 @@ export default function DashboardPage() {
           </div>
 
           {/* Calendar Section */}
-          <Card className="shadow-md border-[var(--border-color)]">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold text-[var(--text-primary)]">Calendario de Clases</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CalendarView />
-            </CardContent>
-          </Card>
+          <CalendarView 
+            onEventClick={(event) => {
+              // Map the CalendarView event to our ClassDetails format
+              const classDetails = {
+                id: event.id,
+                title: event.title,
+                teacher: event.teacherName,
+                teacherId: event.teacherId,
+                date: event.start,
+                startTime: format(event.start, "HH:mm"),
+                endTime: format(event.end, "HH:mm"),
+                level: event.level || "",
+                groupName: event.type === "group" ? event.title : "Clase Individual",
+                students: event.students || [],
+                maxStudents: event.type === "group" ? 4 : 1,
+                classroom: "Aula Virtual",
+                status: "scheduled" as const,
+                zoomLink: "https://zoom.us/j/" + Math.random().toString(36).substring(2, 15),
+                zoomPassword: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                zoomMeetingId: Math.random().toString(36).substring(2, 15),
+                description: event.type === "trial" ? "Clase de prueba para evaluar el nivel del estudiante" : undefined
+              };
+              setSelectedClass(classDetails);
+              setIsClassDetailsOpen(true);
+            }}
+          />
         </TabsContent>
 
         {/* Analytics Tab */}
@@ -538,67 +608,26 @@ export default function DashboardPage() {
         </TabsContent>
       </Tabs>
 
-      {/* Quick Actions */}
-      <div className="px-4">
-        <h3 className="text-[var(--secondary-blue)] text-2xl font-bold tracking-tight pb-4">Acciones Rápidas</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card 
-            className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]"
-            onClick={() => setIsQuickTrialOpen(true)}
-          >
-            <CardContent className="p-6 flex items-center space-x-4">
-              <div className="p-3 bg-[#E8F5E8] rounded-lg">
-                <UserPlus className="h-6 w-6 text-[var(--primary-green)]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[var(--text-primary)]">Clase de Prueba</h4>
-                <p className="text-sm text-[var(--text-secondary)]">Programa clase rápida</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]">
-            <CardContent className="p-6 flex items-center space-x-4">
-              <div className="p-3 bg-[#EAF2ED] rounded-lg">
-                <CalendarDays className="h-6 w-6 text-[var(--primary-green)]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[var(--text-primary)]">Programar Clase</h4>
-                <p className="text-sm text-[var(--text-secondary)]">Agendar nuevas sesiones</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]">
-            <CardContent className="p-6 flex items-center space-x-4">
-              <div className="p-3 bg-[#EAF0F6] rounded-lg">
-                <Users className="h-6 w-6 text-[var(--secondary-blue)]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[var(--text-primary)]">Agregar Estudiante</h4>
-                <p className="text-sm text-[var(--text-secondary)]">Registrar nuevo alumno</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-[var(--border-color)]">
-            <CardContent className="p-6 flex items-center space-x-4">
-              <div className="p-3 bg-[#FEF5EC] rounded-lg">
-                <TrendingUp className="h-6 w-6 text-[var(--accent-orange)]" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[var(--text-primary)]">Ver Reportes</h4>
-                <p className="text-sm text-[var(--text-secondary)]">Análisis y estadísticas</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Quick Trial Class Dialog */}
+      {/* Dialogs */}
       <QuickTrialClassDialog
         open={isQuickTrialOpen}
         onOpenChange={setIsQuickTrialOpen}
+      />
+      
+      <AddStudentDialog
+        open={isAddStudentOpen}
+        onOpenChange={setIsAddStudentOpen}
+        groups={mockGroups}
+        onSubmit={(data) => {
+          console.log("Nuevo estudiante agregado:", data);
+          // Aquí se implementaría la lógica para guardar el estudiante
+        }}
+      />
+
+      <ClassDetailsDialog
+        open={isClassDetailsOpen}
+        onOpenChange={setIsClassDetailsOpen}
+        classDetails={selectedClass}
       />
     </div>
   );

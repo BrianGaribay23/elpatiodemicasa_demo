@@ -37,12 +37,14 @@ import {
   Download,
   Mail,
   User,
-  Languages
+  Languages,
+  Video
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import jsPDF from "jspdf";
 import logoElPatio from "@/assets/images/logos/20250711_2117_Sección Casa Adaptable_remix_01jzya4ff8erj8et5bb2hq251k.png";
+import { zoomLinkManager } from "@/modules/shared/utils/zoomLinkManager";
 
 // Países comunes
 const COUNTRIES = [
@@ -136,7 +138,7 @@ export default function QuickTrialClassDialog({
     { id: "8", date: "2025-01-19", time: "12:00", available: false },
   ];
 
-  const generatePDF = async (data: TrialClassFormData) => {
+  const generatePDF = async (data: TrialClassFormData, zoomDetails?: { link: string; password: string; meetingId: string }) => {
     const selectedSlot = trialClassSlots.find(slot => slot.id === data.selectedSlot);
     
     if (!selectedSlot) return;
@@ -148,10 +150,10 @@ export default function QuickTrialClassDialog({
     const secondaryBlue = [46, 89, 132]; // #2E5984
     const lightBackground = [253, 251, 248]; // #FDFBF8
 
-    // Generar link de Zoom único para la clase
-    const zoomMeetingId = Math.random().toString(36).substring(2, 15);
-    const zoomLink = `https://zoom.us/j/${zoomMeetingId}`;
-    const zoomPassword = Math.random().toString(36).substring(2, 8).toUpperCase();
+    // Use provided Zoom details or generate fallback
+    const zoomLink = zoomDetails?.link || `https://zoom.us/j/${Math.random().toString(36).substring(2, 15)}`;
+    const zoomPassword = zoomDetails?.password || Math.random().toString(36).substring(2, 8).toUpperCase();
+    const zoomMeetingId = zoomDetails?.meetingId || zoomLink.split('/').pop() || 'N/A';
 
     // Header con fondo
     doc.setFillColor(...lightBackground);
@@ -360,12 +362,42 @@ export default function QuickTrialClassDialog({
   };
 
   const handleSubmit = (data: TrialClassFormData) => {
-    setScheduledData(data);
+    const selectedSlot = trialClassSlots.find(slot => slot.id === data.selectedSlot);
+    
+    if (!selectedSlot) return;
+
+    // Create date objects for the trial class
+    const [hours, minutes] = selectedSlot.time.split(':').map(Number);
+    const classDate = new Date(selectedSlot.date);
+    const startTime = new Date(classDate);
+    startTime.setHours(hours, minutes, 0, 0);
+    
+    const endTime = new Date(startTime);
+    endTime.setMinutes(endTime.getMinutes() + 30); // 30 minute trial class
+
+    // Try to assign a Zoom room
+    const classId = `trial-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const result = zoomLinkManager.assignZoomRoom({
+      id: classId,
+      startTime,
+      endTime,
+      teacherId: 'trial-teacher', // This would be assigned based on availability
+      level: 'trial',
+    });
+
+    // Store the Zoom details
+    const zoomDetails = result.success && result.zoomRoom ? {
+      link: result.zoomRoom.meetingUrl,
+      password: result.zoomRoom.passcode,
+      meetingId: result.zoomRoom.meetingId,
+    } : undefined;
+
+    setScheduledData({ ...data, zoomDetails });
     setClassScheduled(true);
     
-    // Generar PDF automáticamente
+    // Generar PDF automáticamente con los detalles de Zoom
     setTimeout(async () => {
-      await generatePDF(data);
+      await generatePDF(data, zoomDetails);
     }, 500);
   };
 
@@ -423,7 +455,7 @@ export default function QuickTrialClassDialog({
 
             <div className="flex justify-center gap-3">
               <Button 
-                onClick={async () => await generatePDF(scheduledData)}
+                onClick={async () => await generatePDF(scheduledData, scheduledData?.zoomDetails)}
                 className="bg-[var(--secondary-blue)] hover:opacity-90 text-white"
               >
                 <Download className="h-4 w-4 mr-2" />
@@ -434,6 +466,20 @@ export default function QuickTrialClassDialog({
                 Enviar por Email
               </Button>
             </div>
+
+            {scheduledData?.zoomDetails && (
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="pt-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Video className="h-4 w-4 text-blue-600" />
+                    <p className="font-medium text-blue-900">Sala Zoom Asignada</p>
+                  </div>
+                  <p className="text-sm text-blue-700">
+                    Tu clase se realizará en una sala dedicada con capacidad para 100 participantes.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <DialogFooter className="pt-4 border-t border-gray-100">

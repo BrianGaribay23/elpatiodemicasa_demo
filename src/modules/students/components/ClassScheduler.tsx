@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, Clock, Users, AlertCircle, CheckCircle2, X } from "lucide-react";
+import { Calendar, Clock, Users, AlertCircle, CheckCircle2, X, Video } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { zoomLinkManager } from "@/modules/shared/utils/zoomLinkManager";
 
 interface GroupInfo {
   id: number;
@@ -40,6 +41,7 @@ interface ClassSchedulerProps {
 }
 
 interface ScheduledClass {
+  id?: string;
   date: Date;
   startTime: string;
   endTime: string;
@@ -48,6 +50,9 @@ interface ScheduledClass {
   teacher: string;
   classroom: string;
   level: string;
+  zoomRoomId?: string;
+  zoomLink?: string;
+  zoomPassword?: string;
 }
 
 const DAYS_MAP: { [key: string]: number } = {
@@ -132,21 +137,67 @@ export default function ClassScheduler({
     );
   };
 
-  // Create scheduled classes
+  // Create scheduled classes with Zoom links
   const createScheduledClasses = (): ScheduledClass[] => {
     const { startTime, endTime } = parseSchedule(group.schedule);
     const finalDates = getFinalDates();
+    const scheduledClasses: ScheduledClass[] = [];
 
-    return finalDates.map(date => ({
-      date,
-      startTime,
-      endTime,
-      groupId: group.id,
-      groupName: group.name,
-      teacher: group.teacher,
-      classroom: group.classroom,
-      level: group.level,
-    }));
+    for (const date of finalDates) {
+      // Create date objects for start and end times
+      const [startHour, startMinute] = startTime.split(':').map(Number);
+      const [endHour, endMinute] = endTime.split(':').map(Number);
+      
+      const classStartTime = new Date(date);
+      classStartTime.setHours(startHour, startMinute, 0, 0);
+      
+      const classEndTime = new Date(date);
+      classEndTime.setHours(endHour, endMinute, 0, 0);
+
+      // Generate unique ID for the class
+      const classId = `class-${group.id}-${date.getTime()}-${Math.random().toString(36).substr(2, 9)}`;
+
+      // Try to assign a Zoom room
+      const result = zoomLinkManager.assignZoomRoom({
+        id: classId,
+        startTime: classStartTime,
+        endTime: classEndTime,
+        teacherId: group.teacher,
+        level: group.level,
+      });
+
+      if (result.success && result.zoomRoom) {
+        scheduledClasses.push({
+          id: classId,
+          date,
+          startTime,
+          endTime,
+          groupId: group.id,
+          groupName: group.name,
+          teacher: group.teacher,
+          classroom: group.classroom,
+          level: group.level,
+          zoomRoomId: result.zoomRoom.id,
+          zoomLink: result.zoomRoom.meetingUrl,
+          zoomPassword: result.zoomRoom.passcode,
+        });
+      } else {
+        // If no Zoom room available, still create the class but without Zoom details
+        scheduledClasses.push({
+          id: classId,
+          date,
+          startTime,
+          endTime,
+          groupId: group.id,
+          groupName: group.name,
+          teacher: group.teacher,
+          classroom: group.classroom,
+          level: group.level,
+        });
+      }
+    }
+
+    return scheduledClasses;
   };
 
   // Handle schedule confirmation
@@ -319,18 +370,58 @@ export default function ClassScheduler({
                 </AlertDescription>
               </Alert>
 
+              {/* Zoom Room Availability Info */}
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="pt-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Video className="h-4 w-4 text-blue-600" />
+                    <h4 className="font-medium text-blue-900">Asignación de Salas Zoom</h4>
+                  </div>
+                  <p className="text-sm text-blue-700">
+                    Las salas de Zoom se asignarán automáticamente al confirmar.
+                    Sistema con 5 salas disponibles para evitar conflictos.
+                  </p>
+                </CardContent>
+              </Card>
+
               {/* Preview */}
               {showPreview && (
                 <Card>
                   <CardContent className="pt-6">
                     <h4 className="font-medium mb-3">Vista Previa de Clases:</h4>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {getFinalDates().map((date, index) => (
-                        <div key={index} className="flex items-center justify-between text-sm">
-                          <span>{format(date, "EEEE d 'de' MMMM", { locale: es })}</span>
-                          <span className="text-muted-foreground">{group.schedule.split(" ")[1]}</span>
-                        </div>
-                      ))}
+                      {getFinalDates().map((date, index) => {
+                        // Check Zoom availability for this date/time
+                        const { startTime: timeStr } = parseSchedule(group.schedule);
+                        const [startHour, startMinute] = timeStr.split(':').map(Number);
+                        const classStartTime = new Date(date);
+                        classStartTime.setHours(startHour, startMinute, 0, 0);
+                        
+                        const availability = zoomLinkManager.checkAvailability([{
+                          start: classStartTime,
+                          end: new Date(classStartTime.getTime() + 90 * 60000) // 90 min class
+                        }]);
+                        
+                        return (
+                          <div key={index} className="flex items-center justify-between text-sm">
+                            <span>{format(date, "EEEE d 'de' MMMM", { locale: es })}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-muted-foreground">{group.schedule.split(" ")[1]}</span>
+                              {availability.available ? (
+                                <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-300">
+                                  <Video className="h-3 w-3 mr-1" />
+                                  Zoom OK
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-300">
+                                  <AlertCircle className="h-3 w-3 mr-1" />
+                                  Sin Zoom
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>

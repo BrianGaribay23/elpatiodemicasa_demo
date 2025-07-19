@@ -17,6 +17,7 @@ import {
   AlertCircle,
   CheckCircle2
 } from "lucide-react";
+import ZoomRoomStatus from "../components/ZoomRoomStatus";
 
 export default function AcademicPage() {
   // Mock class data
@@ -139,6 +140,9 @@ export default function AcademicPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Zoom Room Status */}
+      <ZoomRoomStatus />
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="classes" className="w-full">

@@ -41,7 +41,12 @@ interface CalendarEvent {
   level?: string;
 }
 
-const CalendarView = ({ events = mockEvents }) => {
+interface CalendarViewProps {
+  events?: CalendarEvent[];
+  onEventClick?: (event: CalendarEvent) => void;
+}
+
+const CalendarView = ({ events = mockEvents, onEventClick }: CalendarViewProps) => {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 6, 7)); // July 7, 2025
   const [view, setView] = useState<"week" | "month">("week");
   const [draggedEvent, setDraggedEvent] = useState<CalendarEvent | null>(null);
@@ -204,10 +209,11 @@ const CalendarView = ({ events = mockEvents }) => {
                       {cellEvents.map((event) => (
                         <div
                           key={event.id}
-                          className="p-1 mb-1 rounded-md text-xs cursor-move"
+                          className="p-1 mb-1 rounded-md text-xs cursor-pointer hover:opacity-90 transition-opacity"
                           style={{ backgroundColor: event.color }}
                           draggable
                           onDragStart={() => handleDragStart(event)}
+                          onClick={() => onEventClick && onEventClick(event)}
                         >
                           <div className="font-medium">
                             {event.title}
@@ -285,8 +291,9 @@ const CalendarView = ({ events = mockEvents }) => {
                           {dayEvents.slice(0, 3).map((event, idx) => (
                             <div
                               key={idx}
-                              className="text-xs p-1 rounded truncate"
+                              className="text-xs p-1 rounded truncate cursor-pointer hover:opacity-90 transition-opacity"
                               style={{ backgroundColor: event.color }}
+                              onClick={() => onEventClick && onEventClick(event)}
                             >
                               {format(event.start, 'HH:mm')} {event.title}
                             </div>
