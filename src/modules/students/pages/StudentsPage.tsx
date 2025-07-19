@@ -29,6 +29,7 @@ import {
 import { format } from "date-fns";
 import ClassScheduler from "../components/ClassScheduler";
 import AddStudentDialog from "../components/AddStudentDialog";
+import GroupReenrollmentDialog from "../components/GroupReenrollmentDialog";
 
 export default function StudentsPage() {
   const [activeTab, setActiveTab] = useState("students");
@@ -37,6 +38,8 @@ export default function StudentsPage() {
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   const [schedulerGroup, setSchedulerGroup] = useState<any>(null);
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+  const [isReenrollmentOpen, setIsReenrollmentOpen] = useState(false);
+  const [reenrollmentGroup, setReenrollmentGroup] = useState<any>(null);
 
   // Mock student data
   const students = [
@@ -513,12 +516,12 @@ export default function StudentsPage() {
                             className="flex-1"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSchedulerGroup(group);
-                              setIsSchedulerOpen(true);
+                              setReenrollmentGroup(group);
+                              setIsReenrollmentOpen(true);
                             }}
                           >
-                            <CalendarDays className="h-4 w-4 mr-1" />
-                            Programar Mes
+                            <Users className="h-4 w-4 mr-1" />
+                            Reinscribir Grupo
                           </Button>
                         </div>
                       </CardContent>
@@ -930,6 +933,15 @@ export default function StudentsPage() {
           setIsAddStudentOpen(false);
         }}
       />
+      
+      {/* Group Reenrollment Dialog */}
+      {reenrollmentGroup && (
+        <GroupReenrollmentDialog
+          open={isReenrollmentOpen}
+          onOpenChange={setIsReenrollmentOpen}
+          group={reenrollmentGroup}
+        />
+      )}
     </div>
   );
 }
