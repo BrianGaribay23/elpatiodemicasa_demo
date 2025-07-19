@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import "../styles/ClassDetailsModal.css";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -56,12 +57,14 @@ export default function ClassDetailsDialog({
   onOpenChange,
   classDetails
 }: ClassDetailsDialogProps) {
+  const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  
   if (!classDetails) return null;
 
   const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
-    // You could add a toast notification here
-    console.log(`${type} copiado al portapapeles`);
+    setCopiedItem(type);
+    setTimeout(() => setCopiedItem(null), 1000);
   };
 
   const getStatusBadge = (status: string) => {
@@ -102,18 +105,20 @@ export default function ClassDetailsDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="pb-2">
+        <DialogHeader className="pb-2 modal-header-animated">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-lg font-semibold text-[var(--primary-green)]">
               Detalles de la Clase
             </DialogTitle>
-            {getStatusBadge(classDetails.status)}
+            <div className="status-badge-animated">
+              {getStatusBadge(classDetails.status)}
+            </div>
           </div>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Class Info Header - More Compact */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between class-details-section">
             <div>
               <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                 {classDetails.title}
@@ -132,8 +137,8 @@ export default function ClassDetailsDialog({
           </div>
 
           {/* Date, Time, Teacher and Classroom - Condensed */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-2 gap-3 class-details-section">
+            <div className="p-3 bg-gray-50 rounded-lg hover-lift">
               <div className="flex items-center gap-2 mb-1">
                 <Calendar className="h-3 w-3 text-[var(--secondary-blue)]" />
                 <p className="text-xs font-medium">Fecha y Hora</p>
@@ -146,7 +151,7 @@ export default function ClassDetailsDialog({
               </p>
             </div>
             
-            <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="p-3 bg-gray-50 rounded-lg hover-lift">
               <div className="flex items-center gap-2 mb-1">
                 <User className="h-3 w-3 text-[var(--neutral-gray)]" />
                 <p className="text-xs font-medium">Profesor y Aula</p>
@@ -159,10 +164,10 @@ export default function ClassDetailsDialog({
 
           {/* Zoom Details */}
           {classDetails.zoomLink && (
-            <Card className="bg-blue-50 border-blue-200">
+            <Card className="bg-blue-50 border-blue-200 zoom-info-card info-card-shine class-details-section">
               <CardContent className="pt-3">
                 <div className="flex items-center gap-2 mb-2">
-                  <Video className="h-4 w-4 text-blue-600" />
+                  <Video className="h-4 w-4 text-blue-600 icon-spin" />
                   <h4 className="font-semibold text-blue-900 text-sm">Información de Zoom</h4>
                 </div>
                 
@@ -177,9 +182,10 @@ export default function ClassDetailsDialog({
                         size="sm"
                         variant="ghost"
                         onClick={() => copyToClipboard(classDetails.zoomLink!, "Link")}
-                        className="h-7 w-7 p-0 text-blue-600 hover:bg-blue-100"
+                        className="h-7 w-7 p-0 text-blue-600 hover:bg-blue-100 copy-button-animated relative"
                       >
                         <Copy className="h-3 w-3" />
+                        {copiedItem === "Link" && <span className="copy-success">✓</span>}
                       </Button>
                       <Button
                         size="sm"
@@ -202,9 +208,10 @@ export default function ClassDetailsDialog({
                             size="sm"
                             variant="ghost"
                             onClick={() => copyToClipboard(classDetails.zoomMeetingId!, "ID")}
-                            className="h-6 w-6 p-0 text-blue-600 hover:bg-blue-100"
+                            className="h-6 w-6 p-0 text-blue-600 hover:bg-blue-100 copy-button-animated relative"
                           >
                             <Copy className="h-3 w-3" />
+                            {copiedItem === "ID" && <span className="copy-success">✓</span>}
                           </Button>
                         </div>
                       </div>
@@ -219,9 +226,10 @@ export default function ClassDetailsDialog({
                             size="sm"
                             variant="ghost"
                             onClick={() => copyToClipboard(classDetails.zoomPassword!, "Contraseña")}
-                            className="h-6 w-6 p-0 text-blue-600 hover:bg-blue-100"
+                            className="h-6 w-6 p-0 text-blue-600 hover:bg-blue-100 copy-button-animated relative"
                           >
                             <Copy className="h-3 w-3" />
+                            {copiedItem === "Contraseña" && <span className="copy-success">✓</span>}
                           </Button>
                         </div>
                       </div>
@@ -233,21 +241,21 @@ export default function ClassDetailsDialog({
           )}
 
           {/* Students - Compact */}
-          <div>
+          <div className="class-details-section">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Users className="h-3 w-3 text-[var(--neutral-gray)]" />
                 <p className="text-sm font-medium">Estudiantes</p>
               </div>
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-xs status-breathe">
                 {classDetails.students.length} / {classDetails.maxStudents}
               </Badge>
             </div>
             
-            <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="p-3 bg-gray-50 rounded-lg hover-lift">
               <div className="grid grid-cols-2 gap-1">
                 {classDetails.students.map((student, index) => (
-                  <div key={index} className="flex items-center gap-1 text-xs">
+                  <div key={index} className="flex items-center gap-1 text-xs student-list-item">
                     <div className="w-1.5 h-1.5 bg-[var(--primary-green)] rounded-full" />
                     <span>{student}</span>
                   </div>
@@ -272,7 +280,7 @@ export default function ClassDetailsDialog({
           )}
 
           {/* Actions */}
-          <div className="flex justify-end gap-2 pt-3 border-t">
+          <div className="flex justify-end gap-2 pt-3 border-t action-buttons-container">
             {classDetails.status === "scheduled" && (
               <>
                 <Button variant="outline">
@@ -288,7 +296,7 @@ export default function ClassDetailsDialog({
             )}
             {classDetails.zoomLink && classDetails.status !== "completed" && (
               <Button 
-                className="bg-[var(--primary-green)] hover:opacity-90 text-white"
+                className="bg-[var(--primary-green)] hover:opacity-90 text-white ripple-container"
                 onClick={() => window.open(classDetails.zoomLink, "_blank")}
               >
                 <Video className="h-4 w-4 mr-2" />

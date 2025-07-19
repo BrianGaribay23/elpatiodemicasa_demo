@@ -27,6 +27,7 @@ import {
   isSameDay,
 } from "date-fns";
 import { es } from "date-fns/locale";
+import "../../styles/CalendarAnimations.css";
 
 interface CalendarEvent {
   id: string;
@@ -209,39 +210,42 @@ const CalendarView = ({ events = mockEvents, onEventClick }: CalendarViewProps) 
                       {cellEvents.map((event) => (
                         <div
                           key={event.id}
-                          className="p-1 mb-1 rounded-md text-xs cursor-pointer hover:opacity-90 transition-opacity"
+                          className={`p-1 mb-1 rounded-md text-xs calendar-event calendar-event-animated event-${event.type}`}
                           style={{ backgroundColor: event.color }}
                           draggable
                           onDragStart={() => handleDragStart(event)}
                           onClick={() => onEventClick && onEventClick(event)}
                         >
-                          <div className="font-medium">
-                            {event.title}
-                            {event.level && (
-                              <Badge className="ml-1 text-xs px-1 py-0" variant="outline">
-                                {event.level}
-                              </Badge>
+                          <div className="calendar-event-content">
+                            <div className="font-medium">
+                              {event.title}
+                              {event.level && (
+                                <Badge className="ml-1 text-xs px-1 py-0 level-badge" variant="outline">
+                                  {event.level}
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between mt-1">
+                              <span>
+                                {format(event.start, "HH:mm")} -{" "}
+                                {format(event.end, "HH:mm")}
+                              </span>
+                              <div className="flex items-center">
+                                {event.type === "individual" ? (
+                                  <User className="h-3 w-3 mr-1" />
+                                ) : (
+                                  <Users className="h-3 w-3 mr-1" />
+                                )}
+                                <span className="ml-1">{event.teacherName}</span>
+                              </div>
+                            </div>
+                            {event.type === "group" && (
+                              <div className="text-xs mt-1 opacity-80">
+                                {event.students.length} estudiantes
+                              </div>
                             )}
                           </div>
-                          <div className="flex items-center justify-between mt-1">
-                            <span>
-                              {format(event.start, "HH:mm")} -{" "}
-                              {format(event.end, "HH:mm")}
-                            </span>
-                            <div className="flex items-center">
-                              {event.type === "individual" ? (
-                                <User className="h-3 w-3 mr-1" />
-                              ) : (
-                                <Users className="h-3 w-3 mr-1" />
-                              )}
-                              <span className="ml-1">{event.teacherName}</span>
-                            </div>
-                          </div>
-                          {event.type === "group" && (
-                            <div className="text-xs mt-1 opacity-80">
-                              {event.students.length} estudiantes
-                            </div>
-                          )}
+                          <span className="calendar-event-tooltip">Ver detalles</span>
                         </div>
                       ))}
                     </div>
@@ -291,11 +295,13 @@ const CalendarView = ({ events = mockEvents, onEventClick }: CalendarViewProps) 
                           {dayEvents.slice(0, 3).map((event, idx) => (
                             <div
                               key={idx}
-                              className="text-xs p-1 rounded truncate cursor-pointer hover:opacity-90 transition-opacity"
+                              className={`text-xs p-1 rounded truncate calendar-event calendar-event-animated event-${event.type}`}
                               style={{ backgroundColor: event.color }}
                               onClick={() => onEventClick && onEventClick(event)}
                             >
-                              {format(event.start, 'HH:mm')} {event.title}
+                              <span className="calendar-event-content">
+                                {format(event.start, 'HH:mm')} {event.title}
+                              </span>
                             </div>
                           ))}
                           {dayEvents.length > 3 && (
