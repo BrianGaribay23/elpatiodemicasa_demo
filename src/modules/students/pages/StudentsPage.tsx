@@ -30,6 +30,7 @@ import { format } from "date-fns";
 import ClassScheduler from "../components/ClassScheduler";
 import AddStudentDialog from "../components/AddStudentDialog";
 import GroupReenrollmentDialog from "../components/GroupReenrollmentDialog";
+import StudentDetailsModal from "../components/StudentDetailsModal";
 
 export default function StudentsPage() {
   const [activeTab, setActiveTab] = useState("students");
@@ -40,6 +41,8 @@ export default function StudentsPage() {
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [isReenrollmentOpen, setIsReenrollmentOpen] = useState(false);
   const [reenrollmentGroup, setReenrollmentGroup] = useState<any>(null);
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [isStudentDetailsOpen, setIsStudentDetailsOpen] = useState(false);
 
   // Mock student data
   const students = [
@@ -55,7 +58,7 @@ export default function StudentsPage() {
       classesAttended: 45,
       level: "B2",
       nativeLanguage: "Inglés",
-      objective: "Negocios",
+      objective: "Conversación",
       group: "B2 Conversación Avanzada",
       totalClasses: 50,
       nextClass: "Hoy, 14:00",
@@ -433,7 +436,15 @@ export default function StudentsPage() {
                             {getStatusBadge(student.status)}
                           </td>
                           <td className="px-6 py-4">
-                            <Button variant="ghost" size="sm" className="text-[var(--secondary-blue)]">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-[var(--secondary-blue)]"
+                              onClick={() => {
+                                setSelectedStudent(student);
+                                setIsStudentDetailsOpen(true);
+                              }}
+                            >
                               Ver detalles
                             </Button>
                           </td>
@@ -756,7 +767,15 @@ export default function StudentsPage() {
                                 Hace 2 días
                               </td>
                               <td className="px-6 py-4">
-                                <Button variant="ghost" size="sm" className="text-[var(--secondary-blue)]">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="text-[var(--secondary-blue)]"
+                                  onClick={() => {
+                                    setSelectedStudent(student);
+                                    setIsStudentDetailsOpen(true);
+                                  }}
+                                >
                                   Ver perfil
                                 </Button>
                               </td>
@@ -817,94 +836,6 @@ export default function StudentsPage() {
         </Tabs>
       </div>
 
-      {/* Quick Insights - Only show when not viewing group details */}
-      {!selectedGroup && activeTab === "students" && (
-        <div className="px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="hover:shadow-lg transition-shadow border-[var(--border-color)]">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">Top Performers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  { name: "Sofia Lopez", progress: 95, country: "🇺🇸" },
-                  { name: "Juan Martinez", progress: 92, country: "🇦🇷" },
-                  { name: "Carlos Rodriguez", progress: 88, country: "🇲🇽" }
-                ].map((student, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span>{student.country}</span>
-                      <span className="text-sm font-medium">{student.name}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-16 bg-gray-200 rounded-full h-1.5">
-                        <div 
-                          className="bg-[var(--primary-green)] h-1.5 rounded-full"
-                          style={{ width: `${student.progress}%` }}
-                        />
-                      </div>
-                      <span className="text-xs font-medium text-[var(--text-secondary)]">{student.progress}%</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow border-[var(--border-color)]">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">Objetivos Populares</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  { objective: "Español de Negocios", count: 45, icon: Target },
-                  { objective: "Español para Viajes", count: 38, icon: Globe },
-                  { objective: "Español Académico", count: 32, icon: BookOpen },
-                  { objective: "Profesional", count: 28, icon: Award }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-gray-100 rounded">
-                        <item.icon className="h-4 w-4 text-[var(--neutral-gray)]" />
-                      </div>
-                      <span className="text-sm font-medium">{item.objective}</span>
-                    </div>
-                    <span className="text-sm font-semibold text-[var(--secondary-blue)]">{item.count}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow border-[var(--border-color)]">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">Próximos Hitos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  { student: "Ana Perez", milestone: "Completar Nivel B1", date: "Nov 15", icon: TrendingUp },
-                  { student: "Carlos Rodriguez", milestone: "25 Clases", date: "Nov 18", icon: Award },
-                  { student: "Sofia Lopez", milestone: "Listo para Certificación", date: "Nov 20", icon: Award }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-start space-x-3">
-                    <div className="p-2 bg-[#EAF2ED] rounded">
-                      <item.icon className="h-4 w-4 text-[var(--primary-green)]" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-[var(--text-primary)]">{item.student}</p>
-                      <p className="text-xs text-[var(--text-secondary)]">{item.milestone}</p>
-                    </div>
-                    <span className="text-xs text-[var(--text-secondary)]">{item.date}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
       {/* Class Scheduler Dialog */}
       {schedulerGroup && (
         <ClassScheduler
@@ -940,6 +871,15 @@ export default function StudentsPage() {
           open={isReenrollmentOpen}
           onOpenChange={setIsReenrollmentOpen}
           group={reenrollmentGroup}
+        />
+      )}
+
+      {/* Student Details Modal */}
+      {selectedStudent && (
+        <StudentDetailsModal
+          open={isStudentDetailsOpen}
+          onOpenChange={setIsStudentDetailsOpen}
+          student={selectedStudent}
         />
       )}
     </div>

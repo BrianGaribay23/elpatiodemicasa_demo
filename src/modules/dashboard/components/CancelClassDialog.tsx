@@ -151,26 +151,25 @@ export default function CancelClassDialog({
     return differenceInHours(classDateTime, now);
   };
 
-  // Calculate refund amount - Business rule: cancelled classes count as used credit
-  const calculateRefund = () => {
+  // Calculate credits - Business rule: cancelled classes convert to credits for future use
+  const calculateCredits = () => {
     const totalCredits = classDetails.creditValue * classDetails.students.length;
     
-    // Business rule: No refunds - cancelled classes count as credit used
+    // Business rule: Cancelled classes become available credits for future classes
     return {
-      percentage: 0,
       totalCredits,
-      refundCredits: 0,
-      creditsLost: totalCredits,
+      creditsToBank: totalCredits, // Credits that will be available for future use
+      creditsLost: 0, // No credits are lost
     };
   };
 
-  const refundInfo = calculateRefund();
+  const creditInfo = calculateCredits();
 
   const handleSubmit = (data: CancelClassFormData) => {
     const cancellationData = {
       ...data,
       classDetails,
-      refundInfo,
+      creditInfo,
       cancellationTime: new Date(),
       hoursUntilClass: getHoursUntilClass(),
     };
@@ -371,7 +370,7 @@ export default function CancelClassDialog({
             )}
 
             {/* Credit Policy Information */}
-            <Card className="border-2 border-amber-200 bg-amber-50">
+            <Card className="border-2 border-green-200 bg-green-50">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
                   <CreditCard className="h-4 w-4" />
@@ -380,13 +379,13 @@ export default function CancelClassDialog({
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <Alert className="border-amber-200 bg-amber-100">
-                    <AlertCircle className="h-4 w-4 text-amber-600" />
-                    <AlertTitle className="text-amber-800">Regla de negocio</AlertTitle>
-                    <AlertDescription className="text-amber-700">
-                      <strong>Las clases canceladas cuentan como un crédito usado.</strong> 
+                  <Alert className="border-green-200 bg-green-100">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertTitle className="text-green-800">Créditos a favor</AlertTitle>
+                    <AlertDescription className="text-green-700">
+                      <strong>Las clases canceladas se convierten en créditos a favor.</strong> 
                       <br />
-                      No se realizan reembolsos por cancelaciones.
+                      Podrás usar estos créditos para programar futuras clases.
                     </AlertDescription>
                   </Alert>
                   
@@ -397,18 +396,29 @@ export default function CancelClassDialog({
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Créditos de la clase:</span>
-                      <span className="font-medium">{refundInfo.totalCredits}</span>
+                      <span className="font-medium">{creditInfo.totalCredits}</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between">
-                      <span className="font-medium text-red-600">Créditos a consumir:</span>
-                      <span className="font-bold text-red-600">
-                        {refundInfo.totalCredits} créditos
+                      <span className="font-medium text-green-600">Créditos a favor:</span>
+                      <span className="font-bold text-green-600">
+                        +{creditInfo.creditsToBank} créditos
                       </span>
                     </div>
-                    <div className="text-xs text-amber-600 mt-2">
-                      <AlertCircle className="h-3 w-3 inline mr-1" />
-                      Esta acción consumirá los créditos sin posibilidad de reembolso
+                    <div className="text-xs text-green-600 mt-2">
+                      <CheckCircle className="h-3 w-3 inline mr-1" />
+                      Estos créditos quedarán disponibles en tu cuenta para futuras clases
                     </div>
+                  </div>
+                  
+                  <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-xs font-medium text-blue-900 mb-1">
+                      ¿Cómo usar tus créditos?
+                    </p>
+                    <ul className="text-xs text-blue-800 space-y-1">
+                      <li>• Al programar una nueva clase, podrás usar tus créditos disponibles</li>
+                      <li>• Los créditos no tienen fecha de vencimiento</li>
+                      <li>• Puedes acumular créditos de varias cancelaciones</li>
+                    </ul>
                   </div>
                 </div>
               </CardContent>
@@ -602,8 +612,9 @@ export default function CancelClassDialog({
                 <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
                   <li>Se liberará la sala de Zoom asignada</li>
                   <li>Se actualizará el calendario de todos los participantes</li>
-                  <li>Se consumirán {refundInfo.totalCredits} créditos (sin reembolso)</li>
+                  <li>Se generarán {creditInfo.creditsToBank} créditos a favor</li>
                   <li>Los estudiantes serán notificados de la cancelación</li>
+                  <li>Los créditos quedarán disponibles para futuras clases</li>
                   <li>Esta acción no se puede deshacer</li>
                 </ul>
               </AlertDescription>
