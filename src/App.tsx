@@ -9,6 +9,8 @@ import { AcademicPage } from "@/modules/academic";
 import { CalendarPage } from "@/modules/calendar";
 import { FinancePage } from "@/modules/finance";
 import { LoginPage, AuthProvider, ProtectedRoute } from "@/modules/auth";
+import EditRestrictionDemo from "@/modules/dashboard/components/EditRestrictionDemo";
+import CancelRestrictionDemo from "@/modules/dashboard/components/CancelRestrictionDemo";
 import routes from "tempo-routes";
 
 function App() {
@@ -49,6 +51,8 @@ function App() {
                   <FinancePage />
                 </ProtectedRoute>
               } />
+              <Route path="edit-demo" element={<EditRestrictionDemo />} />
+              <Route path="cancel-demo" element={<CancelRestrictionDemo />} />
             </Route>
 
             {/* Unauthorized Route */}

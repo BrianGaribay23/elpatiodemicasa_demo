@@ -21,10 +21,13 @@ import {
   ExternalLink,
   BookOpen,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Edit
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInHours, addDays, startOfDay, isBefore } from "date-fns";
 import { es } from "date-fns/locale";
+import EditClassDialog from "./EditClassDialog";
+import CancelClassDialog from "./CancelClassDialog";
 
 interface ClassDetails {
   id: string;
@@ -44,6 +47,7 @@ interface ClassDetails {
   zoomPassword?: string;
   zoomMeetingId?: string;
   description?: string;
+  creditValue: number;
 }
 
 interface ClassDetailsDialogProps {
@@ -58,8 +62,62 @@ export default function ClassDetailsDialog({
   classDetails
 }: ClassDetailsDialogProps) {
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   
   if (!classDetails) return null;
+
+  // Check if the class can be edited (not same day)
+  const canEditClass = () => {
+    const classDate = new Date(classDetails.date);
+    const today = startOfDay(new Date());
+    const classDay = startOfDay(classDate);
+    
+    // Cannot edit if class is today or in the past
+    return classDay > today;
+  };
+
+  // Get tooltip message for edit restrictions
+  const getEditTooltip = () => {
+    const classDate = new Date(classDetails.date);
+    const today = startOfDay(new Date());
+    const classDay = startOfDay(classDate);
+    
+    if (classDay < today) {
+      return "No se pueden editar clases pasadas";
+    } else if (classDay.getTime() === today.getTime()) {
+      return "Las clases del día actual no pueden editarse";
+    }
+    return "Editar esta clase";
+  };
+
+  // Calculate time until class
+  const getTimeUntilClass = () => {
+    const now = new Date();
+    const classDateTime = new Date(classDetails.date);
+    
+    // Set the class time
+    const [hours, minutes] = classDetails.startTime.split(':').map(Number);
+    classDateTime.setHours(hours, minutes, 0, 0);
+    
+    const diffInMillis = classDateTime.getTime() - now.getTime();
+    const hoursUntil = differenceInHours(classDateTime, now);
+    
+    if (diffInMillis < 0) {
+      return "Clase pasada";
+    } else if (hoursUntil < 1) {
+      const minutesUntil = Math.floor(diffInMillis / 60000);
+      if (minutesUntil === 0) {
+        return "menos de 1 minuto";
+      }
+      return `${minutesUntil} ${minutesUntil === 1 ? 'minuto' : 'minutos'}`;
+    } else if (hoursUntil < 24) {
+      return `${hoursUntil} ${hoursUntil === 1 ? 'hora' : 'horas'}`;
+    }
+    
+    const daysUntil = Math.floor(hoursUntil / 24);
+    return `${daysUntil} ${daysUntil === 1 ? 'día' : 'días'}`;
+  };
 
   const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
@@ -279,16 +337,47 @@ export default function ClassDetailsDialog({
             </div>
           )}
 
+          {/* Time until class indicator */}
+          {classDetails.status === "scheduled" && (
+            <div className={`flex items-center justify-center p-2 rounded-lg ${
+              getTimeUntilClass() === "Clase pasada" 
+                ? "bg-gray-100" 
+                : "bg-blue-50"
+            }`}>
+              <Clock className={`h-4 w-4 mr-2 ${
+                getTimeUntilClass() === "Clase pasada" 
+                  ? "text-gray-600" 
+                  : "text-blue-600"
+              }`} />
+              <span className={`text-sm font-medium ${
+                getTimeUntilClass() === "Clase pasada" 
+                  ? "text-gray-700" 
+                  : "text-blue-700"
+              }`}>
+                {getTimeUntilClass() === "Clase pasada" 
+                  ? "Esta clase ya ocurrió" 
+                  : `Faltan ${getTimeUntilClass()} para la clase`}
+              </span>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex justify-end gap-2 pt-3 border-t action-buttons-container">
             {classDetails.status === "scheduled" && (
               <>
-                <Button variant="outline">
+                <Button 
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(true)}
+                  disabled={!canEditClass()}
+                  title={getEditTooltip()}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
                   Editar Clase
                 </Button>
                 <Button 
                   variant="outline" 
                   className="text-red-600 hover:text-red-700"
+                  onClick={() => setIsCancelDialogOpen(true)}
                 >
                   Cancelar Clase
                 </Button>
@@ -306,6 +395,31 @@ export default function ClassDetailsDialog({
           </div>
         </div>
       </DialogContent>
+      
+      {/* Edit Class Dialog */}
+      <EditClassDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        classDetails={classDetails}
+        onSave={(data) => {
+          console.log("Cambios guardados:", data);
+          // Aquí iría la lógica para guardar los cambios
+          setIsEditDialogOpen(false);
+        }}
+      />
+      
+      {/* Cancel Class Dialog */}
+      <CancelClassDialog
+        open={isCancelDialogOpen}
+        onOpenChange={setIsCancelDialogOpen}
+        classDetails={classDetails}
+        onCancel={(data) => {
+          console.log("Clase cancelada:", data);
+          // Aquí iría la lógica para cancelar la clase
+          setIsCancelDialogOpen(false);
+          onOpenChange(false); // Cerrar el diálogo principal
+        }}
+      />
     </Dialog>
   );
 }
