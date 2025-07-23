@@ -337,31 +337,6 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Countries of Origin */}
-            <Card className="hover:shadow-lg transition-shadow border-[var(--border-color)]">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-base font-semibold text-[var(--text-primary)]">Países de Origen</CardTitle>
-                  <Globe className="h-4 w-4 text-[var(--secondary-blue)]" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {countriesOfOrigin.slice(0, 5).map((country) => (
-                    <div key={country.country} className="flex items-center justify-between py-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xl">{country.flag}</span>
-                        <span className="text-sm font-medium">{country.country}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-sm font-medium">{country.students}</span>
-                        <span className="text-xs text-[var(--text-secondary)] ml-1">({country.percentage}%)</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Trial Classes */}
             <Card className="hover:shadow-lg transition-shadow border-[var(--border-color)]">
@@ -446,7 +421,8 @@ export default function DashboardPage() {
                 zoomLink: "https://zoom.us/j/" + Math.random().toString(36).substring(2, 15),
                 zoomPassword: Math.random().toString(36).substring(2, 8).toUpperCase(),
                 zoomMeetingId: Math.random().toString(36).substring(2, 15),
-                description: event.type === "trial" ? "Clase de prueba para evaluar el nivel del estudiante" : undefined
+                description: event.type === "trial" ? "Clase de prueba para evaluar el nivel del estudiante" : undefined,
+                creditValue: 10 // Default value for demonstration
               };
               setSelectedClass(classDetails);
               setIsClassDetailsOpen(true);

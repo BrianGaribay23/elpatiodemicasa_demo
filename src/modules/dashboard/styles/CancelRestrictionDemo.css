@@ -1,0 +1,193 @@
+/* Cancel Restriction Demo Styles */
+
+/* Emergency contact card animation */
+.emergency-contact-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.emergency-contact-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(251, 146, 60, 0.1),
+    transparent
+  );
+  animation: emergencyShine 3s linear infinite;
+}
+
+@keyframes emergencyShine {
+  to {
+    transform: translateX(50%) translateY(50%);
+  }
+}
+
+/* Status badge animations */
+.bg-red-100 {
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+}
+
+/* Refund badge animations */
+.bg-green-100 {
+  animation: refundBounce 0.5s ease-out;
+}
+
+.bg-amber-100 {
+  animation: refundBounce 0.5s ease-out 0.1s;
+}
+
+@keyframes refundBounce {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Card hover effects */
+.space-y-4 > div > div {
+  transition: all 0.3s ease;
+}
+
+.space-y-4 > div > div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Button disabled state */
+button:disabled {
+  cursor: not-allowed;
+  position: relative;
+}
+
+button:disabled::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    rgba(0, 0, 0, 0.05) 5px,
+    rgba(0, 0, 0, 0.05) 10px
+  );
+  pointer-events: none;
+}
+
+/* Policy card animations */
+.grid > div > div {
+  animation: policyCardSlide 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.grid > div > div:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.grid > div > div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.grid > div > div:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes policyCardSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Time indicator animation */
+.text-red-600, .text-green-600 {
+  font-weight: 600;
+  position: relative;
+}
+
+/* Credit calculation highlight */
+.font-medium.text-green-600 {
+  position: relative;
+  display: inline-block;
+}
+
+.font-medium.text-green-600::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  animation: underlineExpand 0.5s ease-out 0.3s forwards;
+}
+
+@keyframes underlineExpand {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Alert animation */
+.border-red-200.bg-red-100 {
+  animation: alertShake 0.5s ease-out;
+}
+
+@keyframes alertShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(2px);
+  }
+}
+
+/* Additional options icons */
+.text-blue-500 {
+  animation: iconRotate 2s ease-in-out infinite;
+}
+
+@keyframes iconRotate {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+}

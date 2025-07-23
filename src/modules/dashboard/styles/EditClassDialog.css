@@ -1,0 +1,261 @@
+/* Edit Class Dialog Animations and Styles */
+
+/* Tab transitions */
+.edit-class-tabs [role="tabpanel"] {
+  animation: tabFadeIn 0.3s ease-out;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card hover effects */
+.student-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.student-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: rgba(74, 124, 89, 0.05);
+}
+
+/* Available student items */
+.available-student-item {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.available-student-item:hover {
+  background-color: rgba(74, 124, 89, 0.08);
+  transform: translateX(4px);
+}
+
+.available-student-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background-color: var(--primary-green);
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+
+.available-student-item:hover::before {
+  transform: scaleY(1);
+}
+
+/* Time slot selection animation */
+.time-slot-option {
+  transition: all 0.2s ease;
+}
+
+.time-slot-option:hover {
+  background-color: rgba(46, 89, 132, 0.08);
+}
+
+/* Notification preview animation */
+.notification-preview {
+  animation: slideInRight 0.4s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Warning alerts animation */
+.edit-warning-alert {
+  animation: warningPulse 2s ease-in-out infinite;
+}
+
+@keyframes warningPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+/* Add student button animation */
+.add-student-btn {
+  transition: all 0.3s ease;
+}
+
+.add-student-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(74, 124, 89, 0.2);
+}
+
+/* Remove student animation */
+.remove-student-btn {
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.remove-student-btn:hover {
+  opacity: 1;
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+/* Teacher selection highlight */
+.teacher-select-item {
+  transition: all 0.2s ease;
+}
+
+.teacher-select-item:hover {
+  background-color: rgba(46, 89, 132, 0.08);
+  padding-left: 1rem;
+}
+
+/* Success state animation */
+.save-success {
+  animation: successBounce 0.6s ease-out;
+}
+
+@keyframes successBounce {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Loading states */
+.checking-availability {
+  position: relative;
+  overflow: hidden;
+}
+
+.checking-availability::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  to {
+    left: 100%;
+  }
+}
+
+/* Conflict indicator */
+.conflict-indicator {
+  position: relative;
+}
+
+.conflict-indicator::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  animation: conflictPulse 1s ease-in-out infinite;
+}
+
+@keyframes conflictPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* Disabled state for 24h restriction */
+.time-restricted {
+  position: relative;
+  cursor: not-allowed;
+}
+
+.time-restricted::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(1px);
+}
+
+/* Custom checkbox animation */
+.student-checkbox {
+  transition: all 0.2s ease;
+}
+
+.student-checkbox:checked {
+  animation: checkBounce 0.3s ease-out;
+}
+
+@keyframes checkBounce {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Date picker hover effect */
+.date-picker-trigger:hover {
+  background-color: rgba(74, 124, 89, 0.05);
+  border-color: var(--primary-green);
+}
+
+/* Zoom conflict badge animation */
+.zoom-conflict-badge {
+  animation: conflictShake 0.5s ease-in-out;
+}
+
+@keyframes conflictShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
