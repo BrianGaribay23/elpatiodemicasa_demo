@@ -206,7 +206,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-sm text-gray-500 mt-8">
-          © 2024 El Patio de Mi Casa. Todos los derechos reservados.
+          © 2025 El Patio de Mi Casa. Todos los derechos reservados.
         </p>
       </div>
     </div>

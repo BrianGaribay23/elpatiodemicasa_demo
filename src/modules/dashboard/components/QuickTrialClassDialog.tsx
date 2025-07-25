@@ -128,14 +128,14 @@ export default function QuickTrialClassDialog({
 
   // Horarios disponibles para clase de prueba
   const trialClassSlots = [
-    { id: "1", date: "2025-01-17", time: "10:00", available: true },
-    { id: "2", date: "2025-01-17", time: "14:00", available: true },
-    { id: "3", date: "2025-01-17", time: "16:00", available: false },
-    { id: "4", date: "2025-01-18", time: "09:00", available: true },
-    { id: "5", date: "2025-01-18", time: "11:00", available: true },
-    { id: "6", date: "2025-01-18", time: "15:00", available: true },
-    { id: "7", date: "2025-01-19", time: "10:00", available: true },
-    { id: "8", date: "2025-01-19", time: "12:00", available: false },
+    { id: "1", date: "2025-07-28", time: "10:00", available: true },
+    { id: "2", date: "2025-07-28", time: "14:00", available: true },
+    { id: "3", date: "2025-07-28", time: "16:00", available: false },
+    { id: "4", date: "2025-07-29", time: "09:00", available: true },
+    { id: "5", date: "2025-07-29", time: "11:00", available: true },
+    { id: "6", date: "2025-07-29", time: "15:00", available: true },
+    { id: "7", date: "2025-07-30", time: "10:00", available: true },
+    { id: "8", date: "2025-07-30", time: "12:00", available: false },
   ];
 
   const generatePDF = async (data: TrialClassFormData, zoomDetails?: { link: string; password: string; meetingId: string }) => {

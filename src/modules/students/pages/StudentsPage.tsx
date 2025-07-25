@@ -292,6 +292,13 @@ export default function StudentsPage() {
     return matchesSearch;
   });
 
+  const filteredGroups = groups.filter(group => {
+    const matchesSearch = group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         group.teacher.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         group.level.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
   const selectedGroupData = groups.find(g => g.id === selectedGroup);
   const groupStudents = selectedGroup ? students.filter(s => s.group === selectedGroupData?.name) : [];
 
@@ -462,7 +469,7 @@ export default function StudentsPage() {
             {selectedGroup === null ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {groups.map((group) => (
+                  {filteredGroups.map((group) => (
                     <Card 
                       key={group.id} 
                       className="hover:shadow-xl transition-all hover:scale-105 cursor-pointer border-[var(--border-color)]"

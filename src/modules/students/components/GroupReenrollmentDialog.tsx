@@ -92,10 +92,11 @@ const getMockStudentsForGroup = (group: GroupData): Student[] => {
 };
 
 const MONTHS = [
-  { value: "2025-02", label: "Febrero 2025" },
-  { value: "2025-03", label: "Marzo 2025" },
-  { value: "2025-04", label: "Abril 2025" },
-  { value: "2025-05", label: "Mayo 2025" },
+  { value: "2025-08", label: "Agosto 2025" },
+  { value: "2025-09", label: "Septiembre 2025" },
+  { value: "2025-10", label: "Octubre 2025" },
+  { value: "2025-11", label: "Noviembre 2025" },
+  { value: "2025-12", label: "Diciembre 2025" },
 ];
 
 const CREDIT_PRICE = 35; // Precio por clase en USD
