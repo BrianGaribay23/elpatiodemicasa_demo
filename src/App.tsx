@@ -11,6 +11,7 @@ import { FinancePage } from "@/modules/finance";
 import { LoginPage, AuthProvider, ProtectedRoute } from "@/modules/auth";
 import EditRestrictionDemo from "@/modules/dashboard/components/EditRestrictionDemo";
 import CancelRestrictionDemo from "@/modules/dashboard/components/CancelRestrictionDemo";
+import PricingPage from "@/pages/PricingPage";
 import routes from "tempo-routes";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
             
             {/* Protected Routes */}
             <Route path="/" element={
