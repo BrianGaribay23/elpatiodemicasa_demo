@@ -26,23 +26,21 @@ import {
   eachDayOfInterval,
   isSameDay,
 } from "date-fns";
+import { es } from "date-fns/locale";
+import "../../styles/CalendarAnimations.css";
+import { CalendarEvent, mockEvents } from "./mockEvents";
+import { exportCalendarToPDF } from "../../utils/calendarPdfExport";
 
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  teacherId: string;
-  teacherName: string;
-  type: "individual" | "group";
-  students: string[];
-  color: string;
+interface CalendarViewProps {
+  events?: CalendarEvent[];
+  onEventClick?: (event: CalendarEvent) => void;
 }
 
-const CalendarView = ({ events = mockEvents }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+const CalendarView = ({ events = mockEvents, onEventClick }: CalendarViewProps) => {
+  const [currentDate, setCurrentDate] = useState(new Date()); // Today's date
   const [view, setView] = useState<"week" | "month">("week");
   const [draggedEvent, setDraggedEvent] = useState<CalendarEvent | null>(null);
+  const [selectedTeacher, setSelectedTeacher] = useState<string>("all");
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
@@ -91,170 +89,296 @@ const CalendarView = ({ events = mockEvents }) => {
     e.preventDefault();
   };
 
-  // Generate time slots for the week view
-  const timeSlots = Array.from({ length: 14 }, (_, i) => i + 8); // 8 AM to 9 PM
-
-  // Filter events for the current week
-  const currentEvents = events.filter((event) => {
-    if (view === "week") {
-      return event.start >= weekStart && event.start <= weekEnd;
-    }
-    // Month view filtering would go here
-    return true;
-  });
+  const hours = Array.from({ length: 13 }, (_, i) => i + 8); // 8 AM to 8 PM
 
   const getEventsForDayAndHour = (day: Date, hour: number) => {
-    return currentEvents.filter((event) => {
+    return events.filter((event) => {
       const eventHour = event.start.getHours();
-      return isSameDay(event.start, day) && eventHour === hour;
+      const eventDate = new Date(
+        event.start.getFullYear(),
+        event.start.getMonth(),
+        event.start.getDate(),
+      );
+      const compareDate = new Date(
+        day.getFullYear(),
+        day.getMonth(),
+        day.getDate(),
+      );
+      return (
+        eventDate.getTime() === compareDate.getTime() &&
+        eventHour === hour &&
+        (selectedTeacher === "all" || event.teacherId === selectedTeacher)
+      );
     });
   };
 
+  const teachers = [
+    { id: "all", name: "Todos los profesores" },
+    { id: "1", name: "María González" },
+    { id: "2", name: "Carlos Ruiz" },
+    { id: "3", name: "Ana Martín" },
+    { id: "4", name: "Sofia López" },
+  ];
+
+  // Calculate event duration and position
+  const getEventStyle = (event: CalendarEvent) => {
+    const durationHours =
+      (event.end.getTime() - event.start.getTime()) / (1000 * 60 * 60);
+    const minutes = event.start.getMinutes();
+    const topOffset = (minutes / 60) * 100;
+
+    return {
+      height: `${durationHours * 100}%`,
+      top: `${topOffset}%`,
+      backgroundColor: event.color || "#BBDEFB",
+    };
+  };
+
   return (
-    <Card className="w-full bg-white border-gray-200">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-xl font-bold">
-          Calendario de Clases
-        </CardTitle>
-        <div className="flex items-center space-x-2">
-          <Tabs
-            value={view}
-            onValueChange={(v) => setView(v as "week" | "month")}
-            className="mr-4"
-          >
-            <TabsList>
-              <TabsTrigger value="week">Semana</TabsTrigger>
-              <TabsTrigger value="month">Mes</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <Select>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filtrar por profesor" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los profesores</SelectItem>
-              <SelectItem value="1">María González</SelectItem>
-              <SelectItem value="2">Juan Pérez</SelectItem>
-              <SelectItem value="3">Ana Rodríguez</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="icon" onClick={handlePrevious}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="font-medium">
-              {view === "week" ? (
-                <span>
-                  {format(weekStart, "dd MMM")} -{" "}
-                  {format(weekEnd, "dd MMM yyyy")}
-                </span>
-              ) : (
-                <span>{format(currentDate, "MMMM yyyy")}</span>
-              )}
+    <Card className="border-[var(--border-color)]">
+      <CardHeader className="pb-3">
+        <div className="flex flex-col space-y-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-2xl font-bold text-[var(--primary-green)]">
+              Calendario de Clases
+            </CardTitle>
+            <div className="flex items-center space-x-2">
+              <Tabs value={view} onValueChange={setView as any}>
+                <TabsList className="bg-gray-100">
+                  <TabsTrigger value="week">Semana</TabsTrigger>
+                  <TabsTrigger value="month">Mes</TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {teachers.map((teacher) => (
+                    <SelectItem key={teacher.id} value={teacher.id}>
+                      {teacher.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <Button variant="outline" size="icon" onClick={handleNext}>
-              <ChevronRight className="h-4 w-4" />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handlePrevious}
+                className="hover:bg-[var(--primary-green)] hover:text-white transition-colors"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="font-medium text-[var(--text-primary)]">
+                {view === "week"
+                  ? `${format(weekStart, "d MMM", { locale: es })} - ${format(
+                      weekEnd,
+                      "d MMM yyyy",
+                      { locale: es },
+                    )}`
+                  : format(currentDate, "MMMM yyyy", { locale: es })}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleNext}
+                className="hover:bg-[var(--primary-green)] hover:text-white transition-colors"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setCurrentDate(new Date())}
+              className="hover:bg-[var(--secondary-blue)] hover:text-white transition-colors"
+            >
+              Hoy
             </Button>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent>
-        {view === "week" ? (
-          <div className="border rounded-md">
-            {/* Day headers */}
-            <div className="grid grid-cols-8 border-b">
-              <div className="p-2 font-medium text-center border-r">Hora</div>
-              {daysInWeek.map((day) => (
-                <div
-                  key={day.toString()}
-                  className="p-2 font-medium text-center border-r last:border-r-0"
-                >
-                  <div>{format(day, "EEEE")}</div>
-                  <div className="text-sm">{format(day, "dd/MM")}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Time slots */}
-            {timeSlots.map((hour) => (
-              <div
-                key={hour}
-                className="grid grid-cols-8 border-b last:border-b-0"
-              >
-                <div className="p-2 text-center border-r">{hour}:00</div>
-
-                {daysInWeek.map((day) => {
-                  const cellEvents = getEventsForDayAndHour(day, hour);
-
-                  return (
+      <CardContent className="p-0">
+        {view === "week" && (
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px]">
+              {/* Time labels and day columns */}
+              <div className="grid grid-cols-8 border-t">
+                {/* Time column */}
+                <div className="sticky left-0 bg-white z-10">
+                  <div className="h-12 border-b border-r"></div>
+                  {hours.map((hour) => (
                     <div
-                      key={day.toString()}
-                      className="p-1 border-r last:border-r-0 min-h-[80px]"
-                      onDragOver={handleDragOver}
-                      onDrop={() => handleDrop(day, hour)}
+                      key={hour}
+                      className="h-20 border-b border-r px-2 py-1 text-xs text-[var(--text-secondary)]"
                     >
-                      {cellEvents.map((event) => (
-                        <div
-                          key={event.id}
-                          className="p-1 mb-1 rounded-md text-xs cursor-move"
-                          style={{ backgroundColor: event.color }}
-                          draggable
-                          onDragStart={() => handleDragStart(event)}
-                        >
-                          <div className="font-medium">{event.title}</div>
-                          <div className="flex items-center justify-between mt-1">
-                            <span>
-                              {format(event.start, "HH:mm")} -{" "}
-                              {format(event.end, "HH:mm")}
-                            </span>
-                            <div className="flex items-center">
-                              {event.type === "individual" ? (
-                                <User className="h-3 w-3 mr-1" />
-                              ) : (
-                                <Users className="h-3 w-3 mr-1" />
+                      {`${hour}:00`}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Day columns */}
+                {daysInWeek.map((day) => (
+                  <div key={day.toISOString()} className="relative">
+                    <div className="h-12 border-b border-r p-2 text-center bg-gray-50">
+                      <div className="font-medium text-[var(--text-primary)]">
+                        {format(day, "EEE", { locale: es })}
+                      </div>
+                      <div
+                        className={`text-sm ${
+                          isSameDay(day, new Date())
+                            ? "bg-[var(--primary-green)] text-white rounded-full w-7 h-7 flex items-center justify-center mx-auto"
+                            : "text-[var(--text-secondary)]"
+                        }`}
+                      >
+                        {format(day, "d")}
+                      </div>
+                    </div>
+
+                    {/* Hour slots */}
+                    {hours.map((hour) => (
+                      <div
+                        key={hour}
+                        className="h-20 border-b border-r relative"
+                        onDrop={() => handleDrop(day, hour)}
+                        onDragOver={handleDragOver}
+                      >
+                        {getEventsForDayAndHour(day, hour).map((event) => (
+                          <div
+                            key={event.id}
+                            className="absolute inset-x-1 calendar-event-card rounded p-1 cursor-pointer overflow-hidden text-xs hover-lift"
+                            style={getEventStyle(event)}
+                            draggable
+                            onDragStart={() => handleDragStart(event)}
+                            onClick={() => onEventClick && onEventClick(event)}
+                          >
+                            <div className="flex flex-col h-full">
+                              <span className="font-medium truncate">
+                                {event.title}
+                              </span>
+                              {event.type === "group" && (
+                                <span className="text-[10px] opacity-80 truncate">
+                                  {event.students.length} estudiantes
+                                </span>
                               )}
-                              <span>{event.teacherName}</span>
+                              {event.type === "individual" && (
+                                <span className="text-[10px] opacity-80 truncate">
+                                  {event.students[0]}
+                                </span>
+                              )}
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
-        ) : (
-          <div className="border rounded-md p-4">
-            <div className="text-center text-lg mb-4">Vista Mensual</div>
-            <div className="grid grid-cols-7 gap-1">
+        )}
+
+        {view === "month" && (
+          <div className="p-4">
+            <div className="grid grid-cols-7 gap-px bg-gray-200">
+              {/* Month view header */}
               {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((day) => (
-                <div key={day} className="text-center font-medium p-2">
+                <div
+                  key={day}
+                  className="bg-gray-50 p-2 text-center font-medium text-sm text-[var(--text-primary)]"
+                >
                   {day}
                 </div>
               ))}
 
-              {/* Placeholder for month view - would be implemented with proper date calculations */}
-              {Array.from({ length: 35 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="border rounded-md p-2 min-h-[100px] bg-gray-50"
-                >
-                  <div className="text-right text-sm text-gray-500">
-                    {i + 1}
-                  </div>
-                  {i % 7 === 3 && (
-                    <div className="mt-1">
-                      <Badge className="bg-blue-100 text-blue-800 text-xs">
-                        3 clases
-                      </Badge>
+              {/* Month view days */}
+              {(() => {
+                const monthStart = new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth(),
+                  1,
+                );
+                const monthEnd = new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth() + 1,
+                  0,
+                );
+                const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
+                const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
+                const days = eachDayOfInterval({ start: startDate, end: endDate });
+
+                return days.map((day) => {
+                  const dayEvents = events.filter((event) => {
+                    const eventDate = new Date(
+                      event.start.getFullYear(),
+                      event.start.getMonth(),
+                      event.start.getDate(),
+                    );
+                    const compareDate = new Date(
+                      day.getFullYear(),
+                      day.getMonth(),
+                      day.getDate(),
+                    );
+                    return (
+                      eventDate.getTime() === compareDate.getTime() &&
+                      (selectedTeacher === "all" ||
+                        event.teacherId === selectedTeacher)
+                    );
+                  });
+
+                  return (
+                    <div
+                      key={day.toISOString()}
+                      className={`bg-white p-2 min-h-[100px] ${
+                        day.getMonth() !== currentDate.getMonth()
+                          ? "opacity-50"
+                          : ""
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-1">
+                        <span
+                          className={`text-sm font-medium ${
+                            isSameDay(day, new Date())
+                              ? "bg-[var(--primary-green)] text-white rounded-full w-6 h-6 flex items-center justify-center"
+                              : ""
+                          }`}
+                        >
+                          {format(day, "d")}
+                        </span>
+                      </div>
+
+                      {dayEvents.length > 0 && (
+                        <div className="space-y-1">
+                          {dayEvents.slice(0, 3).map((event) => (
+                            <div
+                              key={event.id}
+                              className="text-[10px] p-1 rounded cursor-pointer truncate calendar-event-small"
+                              style={{
+                                backgroundColor: event.color || "#BBDEFB",
+                              }}
+                              onClick={() => onEventClick && onEventClick(event)}
+                            >
+                              <span className="calendar-event-content">
+                                {format(event.start, 'HH:mm')} {event.title}
+                              </span>
+                            </div>
+                          ))}
+                          {dayEvents.length > 3 && (
+                            <Badge className="text-xs px-1 py-0" variant="secondary">
+                              +{dayEvents.length - 3} más
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
+                  );
+                });
+              })()}
             </div>
           </div>
         )}
@@ -271,11 +395,15 @@ const CalendarView = ({ events = mockEvents }) => {
             </div>
             <div className="flex items-center">
               <div className="w-3 h-3 rounded-full bg-yellow-500 mr-1"></div>
-              <span className="text-sm">Clases de prueba</span>
+              <span className="text-sm">Clases muestra</span>
             </div>
           </div>
 
-          <Button variant="outline" className="flex items-center">
+          <Button 
+            variant="outline" 
+            className="flex items-center"
+            onClick={() => exportCalendarToPDF(events, currentDate, view)}
+          >
             <CalendarIcon className="mr-2 h-4 w-4" />
             Exportar calendario
           </Button>
@@ -284,53 +412,5 @@ const CalendarView = ({ events = mockEvents }) => {
     </Card>
   );
 };
-
-// Mock data for demonstration
-const mockEvents: CalendarEvent[] = [
-  {
-    id: "1",
-    title: "Clase de Español Básico",
-    start: new Date(new Date().setHours(10, 0, 0, 0)),
-    end: new Date(new Date().setHours(11, 0, 0, 0)),
-    teacherId: "1",
-    teacherName: "María G.",
-    type: "individual",
-    students: ["John Smith"],
-    color: "#BBDEFB", // Light blue
-  },
-  {
-    id: "2",
-    title: "Grupo Intermedio",
-    start: new Date(new Date().setHours(14, 0, 0, 0)),
-    end: new Date(new Date().setHours(15, 30, 0, 0)),
-    teacherId: "2",
-    teacherName: "Juan P.",
-    type: "group",
-    students: ["Alice Brown", "Bob Johnson", "Carol White"],
-    color: "#C8E6C9", // Light green
-  },
-  {
-    id: "3",
-    title: "Clase de Prueba",
-    start: new Date(new Date().setHours(16, 0, 0, 0)),
-    end: new Date(new Date().setHours(17, 0, 0, 0)),
-    teacherId: "3",
-    teacherName: "Ana R.",
-    type: "individual",
-    students: ["New Student"],
-    color: "#FFF9C4", // Light yellow
-  },
-  {
-    id: "4",
-    title: "Conversación Avanzada",
-    start: addDays(new Date(new Date().setHours(11, 0, 0, 0)), 1),
-    end: addDays(new Date(new Date().setHours(12, 30, 0, 0)), 1),
-    teacherId: "1",
-    teacherName: "María G.",
-    type: "group",
-    students: ["David Miller", "Emma Wilson"],
-    color: "#C8E6C9", // Light green
-  },
-];
 
 export default CalendarView;

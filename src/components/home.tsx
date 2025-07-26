@@ -2,7 +2,6 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useLocation } from "react-router-dom";
 import {
   Bell,
@@ -26,7 +25,6 @@ export default function HomePage() {
   const user = {
     name: "María González",
     role: "Administrador",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maria",
   };
 
   // Mock alerts
@@ -138,10 +136,9 @@ export default function HomePage() {
                 <p className="text-xs text-muted-foreground">{user.role}</p>
               </div>
 
-              <Avatar>
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-              </Avatar>
+              <div className="size-10 rounded-full bg-[var(--primary-green)] text-white flex items-center justify-center font-semibold">
+                {user.name.charAt(0)}
+              </div>
             </div>
           </div>
         </header>

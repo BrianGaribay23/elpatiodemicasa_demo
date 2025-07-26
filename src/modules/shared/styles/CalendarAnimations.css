@@ -1,0 +1,171 @@
+/* Animaciones para eventos del calendario */
+
+/* Animación de pulso suave para eventos */
+@keyframes eventPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Efecto hover para eventos del calendario */
+.calendar-event {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.calendar-event:hover {
+  animation: eventPulse 0.4s ease;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+/* Efecto de brillo al hover */
+.calendar-event::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.calendar-event:hover::before {
+  left: 100%;
+}
+
+/* Animación de entrada para eventos */
+@keyframes eventFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.calendar-event-animated {
+  animation: eventFadeIn 0.3s ease-out;
+}
+
+/* Efecto de indicador visual antes del clic */
+@keyframes clickIndicator {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.calendar-event:hover {
+  position: relative;
+}
+
+.calendar-event:hover::after {
+  content: '👁️';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 10px;
+  opacity: 0;
+  animation: clickIndicator 1s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+/* Transición para el contenido del evento */
+.calendar-event-content {
+  transition: transform 0.2s ease;
+}
+
+.calendar-event:hover .calendar-event-content {
+  transform: scale(1.02);
+}
+
+/* Efecto de sombra colorida según el tipo de evento */
+.calendar-event.event-group:hover {
+  box-shadow: 
+    0 6px 12px rgba(200, 230, 201, 0.4),
+    0 0 20px rgba(200, 230, 201, 0.2);
+}
+
+.calendar-event.event-individual:hover {
+  box-shadow: 
+    0 6px 12px rgba(187, 222, 251, 0.4),
+    0 0 20px rgba(187, 222, 251, 0.2);
+}
+
+.calendar-event.event-trial:hover {
+  box-shadow: 
+    0 6px 12px rgba(255, 249, 196, 0.4),
+    0 0 20px rgba(255, 249, 196, 0.2);
+}
+
+/* Animación de badge de nivel */
+@keyframes badgeBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.calendar-event:hover .level-badge {
+  animation: badgeBounce 0.5s ease;
+}
+
+/* Tooltip animado para "Ver detalles" */
+@keyframes tooltipFade {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.calendar-event-tooltip {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.calendar-event:hover .calendar-event-tooltip {
+  opacity: 1;
+  animation: tooltipFade 0.3s ease;
+}
