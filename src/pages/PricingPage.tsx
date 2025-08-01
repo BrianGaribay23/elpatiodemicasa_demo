@@ -7,6 +7,7 @@ export default function PricingPage() {
   const [showPriceBlue, setShowPriceBlue] = useState(false);
   const [showPriceOrange, setShowPriceOrange] = useState(false);
   const [showPriceGreen, setShowPriceGreen] = useState(false);
+  const [showModalityModal, setShowModalityModal] = useState(false);
 
   useEffect(() => {
     // Crear partículas en el header
@@ -362,6 +363,7 @@ export default function PricingPage() {
                       
                       <div style={{ textAlign: 'center', marginTop: '30px' }}>
                         <button onClick={() => setShowPriceGreen(false)} className="pricing-back-btn" style={{ color: 'var(--primary-green)', borderColor: 'var(--primary-green)' }}>Volver</button>
+                        <button onClick={() => setShowModalityModal(true)} className="pricing-price-btn-green" style={{ marginTop: '10px' }}>Ver Modalidades de Desarrollo</button>
                       </div>
                     </div>
                   </div>
@@ -371,6 +373,318 @@ export default function PricingPage() {
           </div>
         </div>
       </div>
+      
+      {showModalityModal && (
+        <div className="modal-overlay" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div className="modal-content" style={{
+            backgroundColor: 'white',
+            borderRadius: '20px',
+            padding: '40px',
+            maxWidth: '800px',
+            width: '90%',
+            maxHeight: '90vh',
+            overflow: 'auto',
+            position: 'relative'
+          }}>
+            <button 
+              onClick={() => setShowModalityModal(false)}
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: '#666'
+              }}
+            >
+              ×
+            </button>
+            
+            <h2 style={{ 
+              textAlign: 'center', 
+              marginBottom: '30px',
+              color: '#333',
+              fontSize: '2em'
+            }}>
+              Modalidades de Desarrollo
+            </h2>
+            
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: '20px',
+              marginTop: '30px'
+            }}>
+              <div style={{
+                border: '2px solid var(--primary-green)',
+                borderRadius: '15px',
+                padding: '30px',
+                backgroundColor: '#f9f9f9'
+              }}>
+                <h3 style={{ 
+                  color: 'var(--primary-green)', 
+                  marginBottom: '20px',
+                  fontSize: '1.5em'
+                }}>
+                  Modalidad Desarrollo a 3 Meses
+                </h3>
+                <div style={{
+                  backgroundColor: 'white',
+                  padding: '20px',
+                  borderRadius: '10px',
+                  textAlign: 'center',
+                  marginBottom: '20px'
+                }}>
+                  <div style={{ fontSize: '2em', fontWeight: 'bold', color: 'var(--primary-green)' }}>
+                    $40,000
+                  </div>
+                  <div style={{ fontSize: '0.9em', color: '#666', marginTop: '5px' }}>
+                    Pago inicial para desarrollo
+                  </div>
+                </div>
+                
+                <div style={{ marginTop: '30px' }}>
+                  <h4 style={{ color: '#333', marginBottom: '20px', fontSize: '1.2em' }}>
+                    Roadmap de Pagos - 3 Meses
+                  </h4>
+                  <div style={{ position: 'relative', paddingLeft: '20px' }}>
+                    <div style={{
+                      position: 'absolute',
+                      left: '0',
+                      top: '10px',
+                      bottom: '10px',
+                      width: '2px',
+                      backgroundColor: 'var(--primary-green)',
+                      opacity: '0.3'
+                    }}></div>
+                    
+                    <div style={{ marginBottom: '25px', position: 'relative' }}>
+                      <div style={{
+                        position: 'absolute',
+                        left: '-26px',
+                        top: '5px',
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--primary-green)',
+                        border: '3px solid white',
+                        boxShadow: '0 0 0 2px var(--primary-green)'
+                      }}></div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--primary-green)', marginBottom: '5px' }}>
+                        Mes 1 - Inicio
+                      </div>
+                      <div style={{ fontSize: '1.2em', fontWeight: 'bold', marginBottom: '5px' }}>
+                        $12,000 (30%)
+                      </div>
+                      <div style={{ fontSize: '0.85em', color: '#666' }}>
+                        Firma de contrato y arranque del proyecto
+                      </div>
+                    </div>
+                    
+                    <div style={{ marginBottom: '25px', position: 'relative' }}>
+                      <div style={{
+                        position: 'absolute',
+                        left: '-26px',
+                        top: '5px',
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--primary-green)',
+                        border: '3px solid white',
+                        boxShadow: '0 0 0 2px var(--primary-green)'
+                      }}></div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--primary-green)', marginBottom: '5px' }}>
+                        Mes 2 - Avance 50%
+                      </div>
+                      <div style={{ fontSize: '1.2em', fontWeight: 'bold', marginBottom: '5px' }}>
+                        
+                        $12,000 (30%)
+                      </div>
+                      <div style={{ fontSize: '0.85em', color: '#666' }}>
+                        Entrega de módulos principales
+                      </div>
+                    </div>
+                    
+                    <div style={{ marginBottom: '0', position: 'relative' }}>
+                      <div style={{
+                        position: 'absolute',
+                        left: '-26px',
+                        top: '5px',
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--primary-green)',
+                        border: '3px solid white',
+                        boxShadow: '0 0 0 2px var(--primary-green)'
+                      }}></div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--primary-green)', marginBottom: '5px' }}>
+                        Mes 3 - Entrega Final
+                      </div>
+                      <div style={{ fontSize: '1.2em', fontWeight: 'bold', marginBottom: '5px' }}>
+                      $16,000 (40%)
+                      </div>
+                      <div style={{ fontSize: '0.85em', color: '#666' }}>
+                        Proyecto completo y funcionando
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div style={{
+                border: '2px solid var(--primary-green)',
+                borderRadius: '15px',
+                padding: '30px',
+                backgroundColor: '#f9f9f9'
+              }}>
+                <h3 style={{ 
+                  color: 'var(--primary-green)', 
+                  marginBottom: '20px',
+                  fontSize: '1.5em'
+                }}>
+                  Modalidad Desarrollo a 4 Meses
+                </h3>
+                <div style={{
+                  backgroundColor: 'white',
+                  padding: '20px',
+                  borderRadius: '10px',
+                  textAlign: 'center',
+                  marginBottom: '20px'
+                }}>
+                  <div style={{ fontSize: '2em', fontWeight: 'bold', color: 'var(--primary-green)' }}>
+                    $40,000
+                  </div>
+                  <div style={{ fontSize: '0.9em', color: '#666', marginTop: '5px' }}>
+                    Pago inicial para desarrollo
+                  </div>
+                </div>
+                
+                <div style={{ marginTop: '30px' }}>
+                  <h4 style={{ color: '#333', marginBottom: '20px', fontSize: '1.2em' }}>
+                    Roadmap de Pagos - 4 Meses
+                  </h4>
+                  <div style={{ position: 'relative', paddingLeft: '20px' }}>
+                    <div style={{
+                      position: 'absolute',
+                      left: '0',
+                      top: '10px',
+                      bottom: '10px',
+                      width: '2px',
+                      backgroundColor: 'var(--primary-green)',
+                      opacity: '0.3'
+                    }}></div>
+                    
+                    <div style={{ marginBottom: '25px', position: 'relative' }}>
+                      <div style={{
+                        position: 'absolute',
+                        left: '-26px',
+                        top: '5px',
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--primary-green)',
+                        border: '3px solid white',
+                        boxShadow: '0 0 0 2px var(--primary-green)'
+                      }}></div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--primary-green)', marginBottom: '5px' }}>
+                        Mes 1 - Inicio
+                      </div>
+                      <div style={{ fontSize: '1.2em', fontWeight: 'bold', marginBottom: '5px' }}>
+                        $8,000 (20%)
+                      </div>
+                      <div style={{ fontSize: '0.85em', color: '#666' }}>
+                        Firma de contrato y análisis detallado
+                      </div>
+                    </div>
+                    
+                    <div style={{ marginBottom: '25px', position: 'relative' }}>
+                      <div style={{
+                        position: 'absolute',
+                        left: '-26px',
+                        top: '5px',
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--primary-green)',
+                        border: '3px solid white',
+                        boxShadow: '0 0 0 2px var(--primary-green)'
+                      }}></div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--primary-green)', marginBottom: '5px' }}>
+                        Mes 2 - Primera entrega
+                      </div>
+                      <div style={{ fontSize: '1.2em', fontWeight: 'bold', marginBottom: '5px' }}>
+                        $10,000 (25%)
+                      </div>
+                      <div style={{ fontSize: '0.85em', color: '#666' }}>
+                        Módulos base completados
+                      </div>
+                    </div>
+                    
+                    <div style={{ marginBottom: '25px', position: 'relative' }}>
+                      <div style={{
+                        position: 'absolute',
+                        left: '-26px',
+                        top: '5px',
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--primary-green)',
+                        border: '3px solid white',
+                        boxShadow: '0 0 0 2px var(--primary-green)'
+                      }}></div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--primary-green)', marginBottom: '5px' }}>
+                        Mes 3 - Segunda entrega
+                      </div>
+                      <div style={{ fontSize: '1.2em', fontWeight: 'bold', marginBottom: '5px' }}>
+                        $10,000 (25%)
+                      </div>
+                      <div style={{ fontSize: '0.85em', color: '#666' }}>
+                        Funcionalidades avanzadas
+                      </div>
+                    </div>
+                    
+                    <div style={{ marginBottom: '0', position: 'relative' }}>
+                      <div style={{
+                        position: 'absolute',
+                        left: '-26px',
+                        top: '5px',
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--primary-green)',
+                        border: '3px solid white',
+                        boxShadow: '0 0 0 2px var(--primary-green)'
+                      }}></div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--primary-green)', marginBottom: '5px' }}>
+                        Mes 4 - Entrega Final
+                      </div>
+                      <div style={{ fontSize: '1.2em', fontWeight: 'bold', marginBottom: '5px' }}>
+                        $12,000 (30%)
+                      </div>
+                      <div style={{ fontSize: '0.85em', color: '#666' }}>
+                        Optimización y entrega completa
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
