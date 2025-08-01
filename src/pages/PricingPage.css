@@ -358,7 +358,8 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   cursor: pointer;
-  height: 950px;
+  height: auto;
+  min-height: 1100px;
 }
 
 .pricing-model-card:hover {
@@ -568,7 +569,7 @@
   
   .pricing-model-card {
     height: auto;
-    min-height: 850px;
+    min-height: 1000px;
   }
 }
 
