@@ -291,7 +291,7 @@ export default function PricingPage() {
                       </div>
                       
                       <div style={{ background: 'rgba(255,255,255,0.7)', borderRadius: '10px', padding: '15px', marginBottom: '20px' }}>
-                        <div style={{ fontSize: '0.9em', opacity: 0.8 }}>💼 <strong>Precio premium</strong> - Instalación profesional</div>
+                        <div style={{ fontSize: '0.9em', opacity: 0.8 }}><strong>Precio premium</strong> - Instalación profesional</div>
                         <div style={{ fontSize: '0.85em', opacity: 0.7 }}>Software listo para usar + capacitación</div>
                       </div>
                       
@@ -308,7 +308,7 @@ export default function PricingPage() {
                 {!showPriceGreen ? (
                   <div className="pricing-main-view" style={{ padding: '25px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ flex: '0 0 auto' }}>
-                      <div className="pricing-model-icon">✓</div>
+                      <div className="pricing-model-icon"></div>
                       <h3 className="pricing-model-title">Solución integral: desarrollo, mantenimiento y gestión técnica</h3>
                       <p className="pricing-model-description">
                         Se vende el software con servicio completo de mantenimiento. Nosotros 
@@ -337,10 +337,10 @@ export default function PricingPage() {
                   </div>
                 ) : (
                   <div className="pricing-price-view" style={{ padding: '25px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <div style={{ textAlign: 'center' }}>
+                    <div style={{ textAlign: 'center', maxHeight: '100%', overflowY: 'auto' }}>
                       <h3 style={{ textAlign: 'center', fontSize: '1.4em', marginBottom: '30px', color: 'var(--primary-green)', fontWeight: 600 }}>Desglose de Precios</h3>
                       
-                      <div style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '15px', padding: '40px', marginBottom: '20px' }}>
+                      <div style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '15px', padding: '40px', marginBottom: '30px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(45, 90, 61, 0.2)' }}>
                           <span style={{ fontSize: '0.95em' }}>Infraestructura (mensual)</span>
                           <span style={{ fontWeight: 600, color: 'var(--primary-green)' }}>$800</span>
@@ -351,7 +351,49 @@ export default function PricingPage() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700, fontSize: '1.1em', marginTop: '10px', paddingTop: '15px', borderTop: '2px solid var(--primary-green)', marginBottom: 0 }}>
                           <span>Total Mensual</span>
-                          <span style={{ color: 'var(--primary-green)' }}>$2,400/mes</span>
+                          <span style={{ color: 'var(--primary-green)', textDecoration: 'line-through', opacity: 0.6 }}>$2,400/mes</span>
+                        </div>
+                      </div>
+                      
+                      <div style={{ marginBottom: '30px' }}>
+                        <h4 style={{ fontSize: '1.15em', fontWeight: 600, marginBottom: '20px', color: '#333' }}>Planes con Descuento</h4>
+                        
+                        <div style={{ display: 'grid', gap: '15px' }}>
+                          <div style={{ background: 'white', borderRadius: '12px', padding: '20px', border: '2px solid #e0f2e9', boxShadow: '0 2px 8px rgba(45, 90, 61, 0.05)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                <h5 style={{ fontSize: '1.1em', fontWeight: 600, color: 'var(--primary-green)', marginBottom: '5px' }}>Contrato 1 Año</h5>
+                                <div style={{ fontSize: '0.85em', color: '#666' }}>Ahorra $200/mes</div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '1.8em', fontWeight: 700, color: 'var(--primary-green)' }}>$2,200</div>
+                                <div style={{ fontSize: '0.85em', color: '#666' }}>por mes</div>
+                              </div>
+                            </div>
+                            <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(45, 90, 61, 0.1)' }}>
+                              <div style={{ fontSize: '0.85em', color: '#555' }}>
+                                Ahorro total: $2,400 al año
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div style={{ background: 'linear-gradient(135deg, #e8f5ed 0%, #dff0e6 100%)', borderRadius: '12px', padding: '20px', border: '2px solid var(--primary-green)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                <h5 style={{ fontSize: '1.1em', fontWeight: 600, color: 'var(--primary-green)', marginBottom: '5px' }}>Contrato 2 Años</h5>
+                                <div style={{ fontSize: '0.85em', color: '#666' }}>Ahorra $400/mes</div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '1.8em', fontWeight: 700, color: 'var(--primary-green)' }}>$2,000</div>
+                                <div style={{ fontSize: '0.85em', color: '#666' }}>por mes</div>
+                              </div>
+                            </div>
+                            <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(45, 90, 61, 0.2)' }}>
+                              <div style={{ fontSize: '0.85em', color: '#555' }}>
+                                Ahorro total: $9,600 en 2 años
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       
@@ -363,7 +405,7 @@ export default function PricingPage() {
                       
                       <div style={{ textAlign: 'center', marginTop: '30px' }}>
                         <button onClick={() => setShowPriceGreen(false)} className="pricing-back-btn" style={{ color: 'var(--primary-green)', borderColor: 'var(--primary-green)' }}>Volver</button>
-                        <button onClick={() => setShowModalityModal(true)} className="pricing-price-btn-green" style={{ marginTop: '10px' }}>Ver Modalidades de Desarrollo</button>
+                        <button onClick={() => setShowModalityModal(true)} className="pricing-price-btn-green" style={{ marginTop: '10px' }}>Ver Modalidades de Pago</button>
                       </div>
                     </div>
                   </div>
@@ -410,16 +452,17 @@ export default function PricingPage() {
                 color: '#666'
               }}
             >
-              ×
+              X
             </button>
             
             <h2 style={{ 
               textAlign: 'center', 
               marginBottom: '30px',
               color: '#333',
-              fontSize: '2em'
+              fontSize: '2em',
+              fontWeight: 700
             }}>
-              Modalidades de Desarrollo
+              Modalidades de pago
             </h2>
             
             <div style={{
@@ -439,7 +482,7 @@ export default function PricingPage() {
                   marginBottom: '20px',
                   fontSize: '1.5em'
                 }}>
-                  Modalidad Desarrollo a 3 Meses
+                  Modalidad de pago a 3 Meses
                 </h3>
                 <div style={{
                   backgroundColor: 'white',
@@ -555,7 +598,7 @@ export default function PricingPage() {
                   marginBottom: '20px',
                   fontSize: '1.5em'
                 }}>
-                  Modalidad Desarrollo a 4 Meses
+                  Modalidad de pago a 4 Meses
                 </h3>
                 <div style={{
                   backgroundColor: 'white',
