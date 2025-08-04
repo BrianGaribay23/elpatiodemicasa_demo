@@ -28,50 +28,24 @@ function App() {
         <>
           <Routes>
             {/* Public Routes */}
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/pricing" element={<PricingPage />} />
             
-            {/* Protected Routes */}
-            <Route path="/" element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="users" element={
-                <ProtectedRoute allowedRoles={["ADMINISTRADOR_GENERAL"]}>
-                  <UsersPage />
-                </ProtectedRoute>
-              } />
-              <Route path="students" element={<StudentsPage />} />
-              <Route path="teachers" element={<TeachersPage />} />
-              <Route path="academic" element={<AcademicPage />} />
-              <Route path="calendar" element={<CalendarPage />} />
-              <Route path="finance" element={
-                <ProtectedRoute allowedRoles={["ADMINISTRADOR_GENERAL", "COORDINADOR_ACADEMICO"]}>
-                  <FinancePage />
-                </ProtectedRoute>
-              } />
-              <Route path="edit-demo" element={<EditRestrictionDemo />} />
-              <Route path="cancel-demo" element={<CancelRestrictionDemo />} />
-            </Route>
-
-            {/* Unauthorized Route */}
-            <Route path="/unauthorized" element={
-              <div className="min-h-screen flex items-center justify-center bg-[var(--background-light)]">
-                <div className="text-center">
-                  <h1 className="text-4xl font-bold text-[var(--accent-orange)] mb-4">403</h1>
-                  <p className="text-[var(--text-secondary)] mb-4">No tienes permisos para acceder a esta página</p>
-                  <a href="/dashboard" className="text-[var(--primary-green)] hover:underline">
-                    Volver al inicio
-                  </a>
-                </div>
-              </div>
-            } />
+            {/* Redirect all routes to pricing temporarily */}
+            <Route path="/login" element={<Navigate to="/pricing" replace />} />
+            <Route path="/dashboard" element={<Navigate to="/pricing" replace />} />
+            <Route path="/users" element={<Navigate to="/pricing" replace />} />
+            <Route path="/students" element={<Navigate to="/pricing" replace />} />
+            <Route path="/teachers" element={<Navigate to="/pricing" replace />} />
+            <Route path="/academic" element={<Navigate to="/pricing" replace />} />
+            <Route path="/calendar" element={<Navigate to="/pricing" replace />} />
+            <Route path="/finance" element={<Navigate to="/pricing" replace />} />
+            <Route path="/edit-demo" element={<Navigate to="/pricing" replace />} />
+            <Route path="/cancel-demo" element={<Navigate to="/pricing" replace />} />
+            <Route path="/unauthorized" element={<Navigate to="/pricing" replace />} />
+            <Route path="/" element={<Navigate to="/pricing" replace />} />
 
             {/* Catch all */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/pricing" replace />} />
           </Routes>
           {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
         </>
